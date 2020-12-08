@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -9,15 +10,27 @@
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <VBox prefWidth="300.0" style="-fx-background-color: #1B094F;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <VBox alignment="TOP_CENTER" prefWidth="300.0" spacing="5.0" style="-fx-background-color: #1B094F;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#testclicked" text="Button" />
-                     </children></VBox>
+                        <Button mnemonicParsing="false" onAction="#testclicked" text="Departments" />
+                     </children>
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding></VBox>
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
                   <ListView fx:id="ListView_Department" layoutX="168.0" layoutY="121.0" prefHeight="798.0" prefWidth="978.0" style="-fx-background-color: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <ListView fx:id="ListView_Student" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="798.0" prefWidth="978.0" style="-fx-background-color: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <TableView fx:id="TableView_Student" disable="true" layoutX="186.0" layoutY="174.0" opacity="0.0" style="-fx-background-color: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columns>
+                      <TableColumn fx:id="TableColumn_StudentID" maxWidth="150.0" minWidth="50.0" prefWidth="100.0" text="Numara" />
+                      <TableColumn fx:id="TableColumn_StudentName" maxWidth="150.0" minWidth="50.0" prefWidth="100.0" text="Ad" />
+                        <TableColumn fx:id="TableColumn_StudentSurname" maxWidth="150.0" minWidth="50.0" prefWidth="100.0" text="Soyad" />
+                        <TableColumn fx:id="TableColumn_StudentEmail" maxWidth="250.0" minWidth="75.0" prefWidth="150.0" text="E-Posta" />
+                    </columns>
+                  </TableView>
                </children></AnchorPane>
         </items>
       </SplitPane>
