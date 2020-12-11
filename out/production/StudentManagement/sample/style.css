@@ -1,0 +1,32 @@
+
+.table-cell {
+    -fx-text-fill: black;
+}
+
+.table-view:focused .table-row-cell:selected .table-cell {
+    -fx-text-fill: white;
+    -fx-background-color: #4488AA;
+}
+
+.ShowStudentButton{
+    -fx-background-color: #AAAACC;
+}
+
+.table-row-cell:odd{
+
+   -fx-background-color: #D6F1FF;
+}
+
+.table-row-cell:even{
+   -fx-background-color: #C2EBFF;
+}
+
+.regularbutton{
+    -fx-background-color: #dac9f2;
+    -fx-border: none;
+    -fx-border-radius: 10px;
+}
+
+.regularbutton:hover{
+    -fx-background-color: #beb3ff;
+}

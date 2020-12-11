@@ -4,28 +4,40 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Database{
     public static class DatabaseConnection{
-        public static void Connect(){
+        public static ObservableList<Student> GetAllStudents(){
             try{
                 String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
-                //String url ="jdbc:sqlserver://GREENANGEL\\;databaseName=StudentDatabase;integratedSecurity=true";
-
                 Connection connection = DriverManager.getConnection(url);
-                Statement statement = null;
-                statement = connection.createStatement();
 
-                String sqlScript = "SELECT * FROM StudentTable";
+                Statement statement = connection.createStatement();
+                String sqlScript = "SELECT * FROM StudentTable";                                                        //SELECT Kullanildi
                 ResultSet resultSet = statement.executeQuery(sqlScript);
+                final ObservableList<Student> students = FXCollections.observableArrayList();
 
-                resultSet.next();
-                System.out.println("Name: "+ resultSet.getString("Name"));
+                int i = 0;
+                while(true){
+                    resultSet.next();
+                    if(resultSet.isAfterLast()) break;
+                    Student student = new Student();
+                    student.setID(resultSet.getInt("ID"));
+                    student.setName(resultSet.getString("Name"));
+                    student.setSurname(resultSet.getString("Surname"));
+                    student.setEmail(resultSet.getString("Email"));
+                    student.setPassword(resultSet.getString("Password"));
+                    student.setDepartmentID(resultSet.getInt("DepartmentID"));
+                    students.add(student);
+                }
+                connection.close();
+                return students;
             }catch(Exception e){
                 System.out.println("Can't Login");
+
             }
+            return null;
         }
 
         public static ArrayList<String> GetDepartmentNames(){
@@ -35,7 +47,7 @@ public class Database{
 
             //Get the names
             Statement statement = connection.createStatement();
-            String sqlScript = "SELECT Name FROM DepartmentTable";
+            String sqlScript = "SELECT Name FROM DepartmentTable";                                                      //SELECT FROM Kullanildi
             ResultSet resultSet = statement.executeQuery(sqlScript);
             ArrayList<String> departmentNames = new ArrayList<>();
             int i = 0;
@@ -52,13 +64,43 @@ public class Database{
             }
             return null;
         }
-        public static ObservableList<Student> GetStudentListByDepartmentName(String departmentName){
+        public static ObservableList<Department> GetAllDepartments(){
             try{
                 String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
                 Connection connection = DriverManager.getConnection(url);
 
                 Statement statement = connection.createStatement();
-                String sqlScript = String.format("Select * from StudentTable where DepartmentID = (SELECT ID FROM DepartmentTable where Name = '%s')", departmentName);
+                String sqlScript = "SELECT * FROM DepartmentTable";
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+                final ObservableList<Department> departments = FXCollections.observableArrayList();
+
+                int i = 0;
+                while(true){
+                    resultSet.next();
+                    if(resultSet.isAfterLast()) break;
+                    Department department = new Department();
+                    department.setID(resultSet.getInt("ID"));
+                    department.setName(resultSet.getString("Name"));
+                    department.setLanguage(resultSet.getString("Language"));
+                    department.setDepartmentChair(resultSet.getInt("DepartmentChair"));
+                    departments.add(department);
+                }
+                connection.close();
+                return departments;
+
+            }catch(Exception e){
+                System.out.println("Connection Problem");
+            }
+            return null;
+        }
+        public static ObservableList<Student> GetStudentListByDepartmentID(int ID){
+            try{
+                String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
+                Connection connection = DriverManager.getConnection(url);
+
+                Statement statement = connection.createStatement();
+                                                                                                                        //COMPLEX WHERE CLAUSE
+                String sqlScript = String.format("Select * from StudentTable where DepartmentID = (SELECT ID FROM DepartmentTable where ID = '%d')", ID);                                                      //SELECT FROM Kullanildi
                 ResultSet resultSet = statement.executeQuery(sqlScript);
                 final ObservableList<Student> students = FXCollections.observableArrayList();
 
@@ -91,6 +133,7 @@ public class Database{
                 Connection connection = DriverManager.getConnection(url);
 
                 Statement statement = connection.createStatement();
+                                                                                                                        //INSERT VALUES
                 String sqlScript = String.format("Insert into StudentTable (Name,Surname,Password,Email,DepartmentID) Values('%s','%s','%s','%s','%d')", student.getName(),student.getSurname(),student.getPassword(),student.getEmail(),student.getDepartmentID());
                 PreparedStatement preparedStatement = connection.prepareStatement(sqlScript, Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.executeUpdate();
@@ -115,6 +158,7 @@ public class Database{
                 Connection connection = DriverManager.getConnection(url);
 
                 Statement statement = connection.createStatement();
+                                                                                                                        //Delete
                 String sqlScript = String.format("Delete from StudentTable Where ID = '%d'", id);
                 statement.executeUpdate(sqlScript);
                 connection.close();

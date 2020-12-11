@@ -4,56 +4,64 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="1200.0" prefHeight="800.0" prefWidth="1400.0" style="-fx-background-color: #21015C;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="1200.0" prefHeight="825.0" prefWidth="1400.0" style="-fx-background-color: #21015C;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <SplitPane dividerPositions="0.29797979797979796" style="-fx-background-color: #21015C;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+      <HBox prefHeight="100.0" prefWidth="1259.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+          <AnchorPane minHeight="400.0" minWidth="250.0" prefHeight="600.0" prefWidth="350.0">
                <children>
-                  <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <items>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <VBox alignment="TOP_CENTER" prefWidth="300.0" spacing="25.0" style="-fx-background-color: #1B094F;" styleClass="regularbutton" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <padding>
+                              <Insets top="25.0" />
+                           </padding>
                            <children>
-                              <VBox alignment="TOP_CENTER" prefWidth="300.0" spacing="5.0" style="-fx-background-color: #1B094F;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <padding>
-                                    <Insets top="10.0" />
-                                 </padding>
-                                 <children>
-                                    <Button mnemonicParsing="false" onAction="#testclicked" text="Departments" textAlignment="CENTER" />
-                                 </children>
-                              </VBox>
+                              <Button alignment="CENTER" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowDepartments" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="Departments" textAlignment="CENTER" />
+                              <Button fx:id="Button_AllStudent" alignment="CENTER" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowAllStudent" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="All Students" />
                            </children>
-                        </AnchorPane>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                           <children>
-                              <Pane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <children>
-                                    <Button fx:id="Button_StudentAdd" layoutX="161.0" layoutY="39.0" mnemonicParsing="false" onAction="#StudentAdd" text="Öğrenci Ekle" />
-                                    <Button layoutX="147.0" layoutY="104.0" mnemonicParsing="false" text="Öğrenci Güncelle" />
-                                    <Button fx:id="Button_StudentDelete" layoutX="166.0" layoutY="165.0" mnemonicParsing="false" onAction="#StudentRemove" text="Öğrenci Sil" />
-                                 </children>
-                              </Pane>
-                           </children>
-                        </AnchorPane>
-                    </items>
-                  </SplitPane>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
                </children>
             </AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+          <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="800.0" HBox.hgrow="ALWAYS">
                <children>
-                  <ListView fx:id="ListView_Department" layoutX="168.0" layoutY="121.0" prefHeight="798.0" prefWidth="978.0" style="-fx-background-color: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <ListView fx:id="ListView_Student" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="798.0" prefWidth="978.0" style="-fx-background-color: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <TableView fx:id="TableView_Student" disable="true" layoutX="186.0" layoutY="174.0" opacity="0.0" style="-fx-background-color: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <columns>
-                      <TableColumn fx:id="TableColumn_StudentID" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Numara" />
-                      <TableColumn fx:id="TableColumn_StudentName" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Ad" />
-                        <TableColumn fx:id="TableColumn_StudentSurname" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Soyad" />
-                        <TableColumn fx:id="TableColumn_StudentEmail" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="E-Posta" />
-                        <TableColumn fx:id="TableColumn_StudentPassword" maxWidth="200.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Parola" />
-                    </columns>
-                  </TableView>
-               </children></AnchorPane>
-        </items>
-      </SplitPane>
+                  <HBox alignment="CENTER_RIGHT" layoutY="750.0" prefHeight="75.0" prefWidth="1050.0" spacing="25.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                     <children>
+                        <Button fx:id="Button_StudentDelete" mnemonicParsing="false" onAction="#StudentRemove" styleClass="regularbutton" text="Öğrenci Sil" />
+                        <Button mnemonicParsing="false" styleClass="regularbutton" text="Öğrenci Güncelle" />
+                        <Button fx:id="Button_StudentAdd" mnemonicParsing="false" onAction="#StudentAdd" styleClass="regularbutton" text="Öğrenci Ekle" />
+                     </children>
+                     <padding>
+                        <Insets left="50.0" right="50.0" />
+                     </padding>
+                  </HBox>
+                  <AnchorPane prefHeight="200.0" prefWidth="950.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
+                     <children>
+                        <TableView fx:id="TableView_Student" disable="true" opacity="0.0" style="-fx-background-color: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn fx:id="TableColumn_StudentID" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Numara" />
+                            <TableColumn fx:id="TableColumn_StudentName" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Ad" />
+                              <TableColumn fx:id="TableColumn_StudentSurname" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Soyad" />
+                              <TableColumn fx:id="TableColumn_StudentEmail" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="E-Posta" />
+                              <TableColumn fx:id="TableColumn_StudentDepartment" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="Bölüm" />
+                              <TableColumn fx:id="TableColumn_StudentPassword" maxWidth="200.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Parola" />
+                          </columns>
+                        </TableView>
+                        <TableView fx:id="TableView_Department" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="725.0" prefWidth="1000.0" style="-fx-: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <columns>
+                              <TableColumn fx:id="TableColumn_DepartmentName" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Ad" />
+                              <TableColumn fx:id="TableColumn_DepartmentLanguage" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Dil" />
+                              <TableColumn fx:id="TableColumn_DepartmentChair" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Başkan" />
+                              <TableColumn fx:id="TableColumn_DepartmentStudent" maxWidth="150.0" minWidth="50.0" prefWidth="100.0" text="Göster" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>
