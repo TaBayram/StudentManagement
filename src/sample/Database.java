@@ -14,7 +14,9 @@ public class Database{
                 Connection connection = DriverManager.getConnection(url);
 
                 Statement statement = connection.createStatement();
-                String sqlScript = "SELECT * FROM StudentTable";                                                        //SELECT Kullanildi
+                //CallableStatement stmt = connection.prepareCall("{}")
+
+                String sqlScript = "{call spAllStudent()}";                                                        //SELECT Kullanildi
                 ResultSet resultSet = statement.executeQuery(sqlScript);
                 final ObservableList<Student> students = FXCollections.observableArrayList();
 
@@ -134,7 +136,7 @@ public class Database{
 
                 Statement statement = connection.createStatement();
                                                                                                                         //INSERT VALUES
-                String sqlScript = String.format("Insert into StudentTable (Name,Surname,Password,Email,DepartmentID) Values('%s','%s','%s','%s','%d')", student.getName(),student.getSurname(),student.getPassword(),student.getEmail(),student.getDepartmentID());
+                String sqlScript = String.format("{call spAllStudent()}", student.getName(),student.getSurname(),student.getPassword(),student.getEmail(),student.getDepartmentID());
                 PreparedStatement preparedStatement = connection.prepareStatement(sqlScript, Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.executeUpdate();
                 int id = 0;
@@ -174,3 +176,38 @@ public class Database{
 
 
 }
+
+
+/*
+insert into StudentTable (Name,Surname,Password,Email,DepartmentID) values(LTRIM(RTRIM('   aAaErdem')),LTRIM(RTRIM('DEMİR')),LTRIM(RTRIM('parolamız')),LTRIM(RTRIM('se@@sss')),LTRIM(RTRIM(1000)))
+Insert into StudentTable (Name,Surname,Password,Email,DepartmentID) Values('%s','%s','%s','%s','%d')
+
+
+
+
+Create Procedure spAddStudent
+
+@Name nvarchar(50),
+@Surname nvarchar(50),
+@Password nvarchar(50),
+@Email nvarchar(50),
+@DepartmentID int
+
+as
+Begin
+insert into StudentTable (Name,Surname,Password,Email,DepartmentID)
+values(LTRIM(RTRIM('%s')),LTRIM(RTRIM('%s')),LTRIM(RTRIM('%s')),LTRIM(RTRIM('%s')),LTRIM(RTRIM('%d')))
+End
+
+spAddStudent
+
+Create Procedure spAllStudent
+as
+Begin
+SELECT * FROM StudentTable
+End
+
+spAllStudent
+
+
+ */
