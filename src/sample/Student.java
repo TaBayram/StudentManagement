@@ -34,11 +34,11 @@ public class Student {
         Email = email;
     }
 
-    public int getDepartmentID() {
+    public String getDepartmentID() {
         return DepartmentID;
     }
 
-    public void setDepartmentID(int departmentID) {
+    public void setDepartmentID(String departmentID) {
         DepartmentID = departmentID;
     }
 
@@ -55,5 +55,15 @@ public class Student {
     String Surname;
     String Email;
     String Password;
-    int DepartmentID;
+    String DepartmentID;
+
+    public String getDepartmentName() {
+        return DepartmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        DepartmentName = departmentName;
+    }
+
+    String DepartmentName;
 }

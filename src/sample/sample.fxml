@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="1200.0" prefHeight="825.0" prefWidth="1400.0" style="-fx-background-color: #21015C;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="1200.0" prefHeight="850.0" prefWidth="1400.0" style="-fx-background-color: #21015C;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <HBox prefHeight="100.0" prefWidth="1259.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -27,17 +27,26 @@
             </AnchorPane>
           <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="800.0" HBox.hgrow="ALWAYS">
                <children>
-                  <HBox alignment="CENTER_RIGHT" layoutY="750.0" prefHeight="75.0" prefWidth="1050.0" spacing="25.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                  <VBox minHeight="100.0" prefHeight="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                      <children>
-                        <Button fx:id="Button_StudentDelete" mnemonicParsing="false" onAction="#StudentRemove" styleClass="regularbutton" text="Öğrenci Sil" />
-                        <Button mnemonicParsing="false" styleClass="regularbutton" text="Öğrenci Güncelle" />
-                        <Button fx:id="Button_StudentAdd" mnemonicParsing="false" onAction="#StudentAdd" styleClass="regularbutton" text="Öğrenci Ekle" />
+                        <AnchorPane maxHeight="50.0" prefHeight="50.0" prefWidth="200.0">
+                           <children>
+                              <Label fx:id="Label_Count" layoutX="892.0" layoutY="11.0" prefHeight="17.0" prefWidth="128.0" textFill="WHITE" />
+                           </children></AnchorPane>
+                        <HBox fx:id="HBox_Student" alignment="CENTER_RIGHT" prefHeight="75.0" prefWidth="1050.0" spacing="25.0">
+                           <children>
+                              <CheckBox fx:id="CheckBox_StudentDepartmentName" mnemonicParsing="false" onAction="#ShowStudentsDepartmentName" text="Bölüm Adı" textFill="WHITE" />
+                              <Button fx:id="Button_StudentDelete" mnemonicParsing="false" onAction="#StudentRemove" styleClass="regularbutton" text="Öğrenci Sil" />
+                              <Button mnemonicParsing="false" styleClass="regularbutton" text="Öğrenci Güncelle" />
+                              <Button fx:id="Button_StudentAdd" mnemonicParsing="false" onAction="#StudentAdd" styleClass="regularbutton" text="Öğrenci Ekle" />
+                           </children>
+                           <padding>
+                              <Insets left="50.0" right="50.0" />
+                           </padding>
+                        </HBox>
                      </children>
-                     <padding>
-                        <Insets left="50.0" right="50.0" />
-                     </padding>
-                  </HBox>
-                  <AnchorPane prefHeight="200.0" prefWidth="950.0" AnchorPane.bottomAnchor="75.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
+                  </VBox>
+                  <AnchorPane prefHeight="200.0" prefWidth="950.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                      <children>
                         <TableView fx:id="TableView_Student" disable="true" opacity="0.0" style="-fx-background-color: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columns>

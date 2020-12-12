@@ -8,15 +8,15 @@ import java.util.ArrayList;
 
 public class Database{
     public static class DatabaseConnection{
+        private static String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
+
         public static ObservableList<Student> GetAllStudents(){
             try{
-                String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
                 Connection connection = DriverManager.getConnection(url);
-
                 Statement statement = connection.createStatement();
                 //CallableStatement stmt = connection.prepareCall("{}")
 
-                String sqlScript = "{call spAllStudent()}";                                                        //SELECT Kullanildi
+                String sqlScript = "{call spAllStudent()}";                                                             //PROCEDURE
                 ResultSet resultSet = statement.executeQuery(sqlScript);
                 final ObservableList<Student> students = FXCollections.observableArrayList();
 
@@ -30,26 +30,58 @@ public class Database{
                     student.setSurname(resultSet.getString("Surname"));
                     student.setEmail(resultSet.getString("Email"));
                     student.setPassword(resultSet.getString("Password"));
-                    student.setDepartmentID(resultSet.getInt("DepartmentID"));
+                    student.setDepartmentID(String.valueOf(resultSet.getInt("DepartmentID")));
                     students.add(student);
                 }
                 connection.close();
                 return students;
             }catch(Exception e){
-                System.out.println("Can't Login");
+                System.out.println("Connection Error: " + e.getMessage());
 
             }
             return null;
         }
 
+        public static boolean GetStudentDepartmentName(ObservableList<Student> students){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+
+                Statement statement = connection.createStatement();
+
+                String sqlScript = "Select StudentTable.ID,DepartmentTable.Name from StudentTable " +
+                        "LEFT JOIN DepartmentTable " +
+                        "ON StudentTable.DepartmentId = DepartmentTable.ID";                                                             //PROCEDURE
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+                final ObservableList<Student> studentsDepartmentNames = FXCollections.observableArrayList();
+
+                int i = 0;
+                while(true){
+                    resultSet.next();
+                    if(resultSet.isAfterLast()) break;
+                    int id = resultSet.getInt("ID");
+                    for (Student student: students) {
+                        if(student.getID() == id){
+                            student.setDepartmentName(resultSet.getString(("Name")));
+                            break;
+                        }
+                    }
+                }
+                connection.close();
+                return true;
+            }catch(Exception e){
+                System.out.println("Connection Error: " + e.getMessage());
+
+            }
+            return false;
+        }
+
         public static ArrayList<String> GetDepartmentNames(){
             try{
-            String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
             Connection connection = DriverManager.getConnection(url);
 
             //Get the names
             Statement statement = connection.createStatement();
-            String sqlScript = "SELECT Name FROM DepartmentTable";                                                      //SELECT FROM Kullanildi
+            String sqlScript = "SELECT Name FROM DepartmentTable";                                                      //SELECT FROM
             ResultSet resultSet = statement.executeQuery(sqlScript);
             ArrayList<String> departmentNames = new ArrayList<>();
             int i = 0;
@@ -68,7 +100,6 @@ public class Database{
         }
         public static ObservableList<Department> GetAllDepartments(){
             try{
-                String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
                 Connection connection = DriverManager.getConnection(url);
 
                 Statement statement = connection.createStatement();
@@ -97,7 +128,6 @@ public class Database{
         }
         public static ObservableList<Student> GetStudentListByDepartmentID(int ID){
             try{
-                String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
                 Connection connection = DriverManager.getConnection(url);
 
                 Statement statement = connection.createStatement();
@@ -116,7 +146,7 @@ public class Database{
                     student.setSurname(resultSet.getString("Surname"));
                     student.setEmail(resultSet.getString("Email"));
                     student.setPassword(resultSet.getString("Password"));
-                    student.setDepartmentID(resultSet.getInt("DepartmentID"));
+                    student.setDepartmentID(String.valueOf(resultSet.getInt("DepartmentID")));
                     students.add(student);
                 }
                 connection.close();
@@ -131,19 +161,16 @@ public class Database{
 
         public static int AddStudent(Student student){
             try{
-                String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
                 Connection connection = DriverManager.getConnection(url);
 
                 Statement statement = connection.createStatement();
                                                                                                                         //INSERT VALUES
-                String sqlScript = String.format("{call spAllStudent()}", student.getName(),student.getSurname(),student.getPassword(),student.getEmail(),student.getDepartmentID());
-                PreparedStatement preparedStatement = connection.prepareStatement(sqlScript, Statement.RETURN_GENERATED_KEYS);
-                preparedStatement.executeUpdate();
+                String sqlScript = String.format("spAddStudent '%s', '%s','%s', '%s', %d", student.getName(),student.getSurname(),student.getPassword(),student.getEmail(), Integer.parseInt(student.getDepartmentID()));
+                ResultSet resultSet = statement.executeQuery(sqlScript);
                 int id = 0;
-                try (ResultSet keys = preparedStatement.getGeneratedKeys()) {
-                    keys.next();
-                    id = keys.getInt(1);
-                }
+                resultSet.next();
+                if(resultSet.isAfterLast()) return 0;
+                id = resultSet.getInt(1);
 
                 connection.close();
                 return id;
@@ -156,7 +183,6 @@ public class Database{
         public static boolean RemoveStudent(Student student){
             int id = student.getID();
             try{
-                String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
                 Connection connection = DriverManager.getConnection(url);
 
                 Statement statement = connection.createStatement();
@@ -171,6 +197,25 @@ public class Database{
             }
 
         }
+
+        public static int GetStudentCount(){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+                Statement statement = connection.createStatement();
+
+                String sqlScript = String.format("SELECT COUNT(ID) as [Count] FROM StudentTable");
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+                resultSet.next();
+                int count = resultSet.getInt("Count");
+                connection.close();
+                return count;
+            }catch(Exception e){
+                System.out.println("Connection Problem " + e.getMessage());
+                return 0;
+            }
+
+        }
+
 
     }
 
