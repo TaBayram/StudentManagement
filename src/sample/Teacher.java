@@ -1,8 +1,8 @@
 package sample;
 
-import javafx.util.converter.DateTimeStringConverter;
+public class Teacher {
 
-public class Student {
+
 
     public int getID() {
         return ID;
@@ -36,12 +36,12 @@ public class Student {
         Email = email;
     }
 
-    public String getDepartmentID() {
-        return DepartmentID;
+    public String getTitle() {
+        return Title;
     }
 
-    public void setDepartmentID(String departmentID) {
-        DepartmentID = departmentID;
+    public void setTitle(String title) {
+        Title = title;
     }
 
     public String getPassword() {
@@ -52,30 +52,12 @@ public class Student {
         Password = password;
     }
 
-    public String getDepartmentName() {
-        return DepartmentName;
+    public String getDepartmentID() {
+        return DepartmentID;
     }
 
-    public void setDepartmentName(String departmentName) {
-        DepartmentName = departmentName;
-    }
-
-
-
-    public Integer getSemester() {
-        return Semester;
-    }
-
-    public void setSemester(Integer semester) {
-        Semester = semester;
-    }
-
-    public Integer getAdvisorID() {
-        return AdvisorID;
-    }
-
-    public void setAdvisorID(Integer advisorID) {
-        AdvisorID = advisorID;
+    public void setDepartmentID(String departmentID) {
+        DepartmentID = departmentID;
     }
 
     public String getRegisteredDate() {
@@ -85,19 +67,12 @@ public class Student {
     public void setRegisteredDate(String registeredDate) {
         RegisteredDate = registeredDate;
     }
-
-
-    String DepartmentName;
     int ID;
     String Name;
     String Surname;
-    String Password;
     String Email;
+    String Title;
+    String Password;
     String DepartmentID;
-
-
     String RegisteredDate;
-    Integer Semester;
-    Integer AdvisorID;
-
 }

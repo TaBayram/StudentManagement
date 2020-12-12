@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
+import javafx.util.converter.DateTimeStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
 import java.sql.*;
@@ -36,12 +37,27 @@ public class Controller {
     public TableColumn TableColumn_DepartmentChair;
     public TableColumn TableColumn_DepartmentStudent;
     public CheckBox CheckBox_StudentDepartmentName;
+
     public HBox HBox_Student;
     public Label Label_Count;
+
+    public TableView TableView_Teacher;
+    public TableColumn TableColumn_TeacherId;
+    public TableColumn TableColumn_TeacherName;
+    public TableColumn TableColumn_TeacherSurname;
+    public TableColumn TableColumn_TeacherEmail;
+    public TableColumn TableColumn_TeacherRegisteredDate;
+    public TableColumn TableColumn_TeacherPassword;
+    public TableColumn TableColumn_TeacherDepartment;
+    public TableColumn TableColumn_TeacherTitle;
+    public TableColumn TableColumn_StudentRegisteredDate;
+    public TableColumn TableColumn_StudentSemester;
+    public TableColumn TableColumn_StudentAdvisorID;
 
     /*_______________________________________________________________________*/
     /*##################### STUDENT TABLE #################################*/
     ObservableList<Student> students = FXCollections.observableArrayList();
+    ObservableList<Teacher> teachers = FXCollections.observableArrayList();
 
     private boolean isDepartmentColumnID = true;
     private int selectedDepartmentID;
@@ -92,13 +108,13 @@ public class Controller {
 
         TableView_Student.setDisable(false);
         TableView_Student.setOpacity(1);
+        TableView_Teacher.setDisable(true);
+        TableView_Teacher.setOpacity(0);
         TableView_Department.setDisable(true);
         TableView_Department.setOpacity(0);
 
         SetStudentButtonBoxVisible(true);
     }
-
-
     public void ShowStudentsByDepartmentID(int ID) {
         students.clear();
         students = Database.DatabaseConnection.GetStudentListByDepartmentID(ID);
@@ -106,10 +122,17 @@ public class Controller {
         SetStudentTableViewProperties();
         TableView_Student.refresh();
 
+
+        ShowAllStudentCountByDepartment();
+
         TableColumn_StudentDepartment.setVisible(false);
+
+
 
         TableView_Student.setDisable(false);
         TableView_Student.setOpacity(1);
+        TableView_Teacher.setDisable(true);
+        TableView_Teacher.setOpacity(0);
         TableView_Department.setDisable(true);
         TableView_Department.setOpacity(0);
 
@@ -247,6 +270,13 @@ public class Controller {
     public void ShowAllStudentCount(){
         Label_Count.textProperty().setValue("Student Count: " + String.valueOf(Database.DatabaseConnection.GetStudentCount()));
     }
+    public void ShowAllTeacherCount(){
+        Label_Count.textProperty().setValue("Student Count: " + String.valueOf(Database.DatabaseConnection.GetTeacherCount()));
+    }
+
+    public void ShowAllStudentCountByDepartment(){
+        Label_Count.textProperty().setValue("Student Count: " + String.valueOf(Database.DatabaseConnection.GetStudentCountByDepartmentID(selectedDepartmentID)));
+    }
 
     public void ShowStudentsDepartmentName(ActionEvent actionEvent) {
         var checkBox = (CheckBox) actionEvent.getSource();
@@ -266,11 +296,16 @@ public class Controller {
 
     private void SetStudentTableViewProperties(){
 
+
         TableColumn_StudentName.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_StudentSurname.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_StudentEmail.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_StudentPassword.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_StudentDepartment.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+       // TableColumn_StudentRegisteredDate.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+      //  TableColumn_StudentSemester.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+      //  TableColumn_StudentAdvisorID.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+
         //TableColumn_StudentDepartment.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
         TableColumn_StudentID.setCellValueFactory(new PropertyValueFactory<Student, Integer>("ID"));
@@ -279,10 +314,38 @@ public class Controller {
         TableColumn_StudentEmail.setCellValueFactory(new PropertyValueFactory<Student, String>("Email"));
         TableColumn_StudentPassword.setCellValueFactory(new PropertyValueFactory<Student, String>("Password"));
         TableColumn_StudentDepartment.setCellValueFactory(new PropertyValueFactory<Student, String>("DepartmentID"));
+     //   TableColumn_StudentRegisteredDate.setCellValueFactory(new PropertyValueFactory<Student, DateTimeStringConverter>("RegisteredDate"));
+     //   TableColumn_StudentSemester.setCellValueFactory(new PropertyValueFactory<Student, Integer>("Semester"));
+      //  TableColumn_StudentAdvisorID.setCellValueFactory(new PropertyValueFactory<Student, Integer>("AdvisorID"));
 
         TableView_Student.setEditable(true);
         TableView_Student.setItems(students);
         TableView_Student.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    }
+
+    private void SetTeacherTableViewProperties(){
+
+        TableColumn_TeacherName.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        TableColumn_TeacherSurname.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        TableColumn_TeacherEmail.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        TableColumn_TeacherPassword.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        TableColumn_TeacherDepartment.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        TableColumn_TeacherTitle.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        TableColumn_TeacherRegisteredDate.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        //TableColumn_StudentDepartment.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+
+        TableColumn_TeacherId.setCellValueFactory(new PropertyValueFactory<Teacher, Integer>("ID"));
+        TableColumn_TeacherName.setCellValueFactory(new PropertyValueFactory<Teacher, String>("Name"));
+        TableColumn_TeacherSurname.setCellValueFactory(new PropertyValueFactory<Teacher, String>("Surname"));
+        TableColumn_TeacherEmail.setCellValueFactory(new PropertyValueFactory<Teacher, String>("Email"));
+        TableColumn_TeacherRegisteredDate.setCellValueFactory(new PropertyValueFactory<Teacher, DateTimeStringConverter>("RegisteredDate"));
+        TableColumn_TeacherPassword.setCellValueFactory(new PropertyValueFactory<Teacher, String>("Password"));
+        TableColumn_TeacherDepartment.setCellValueFactory(new PropertyValueFactory<Teacher, String>("DepartmentID"));
+        TableColumn_TeacherTitle.setCellValueFactory(new PropertyValueFactory<Teacher, String>("Title"));
+
+        TableView_Teacher.setEditable(true);
+        TableView_Teacher.setItems(teachers);
+        TableView_Teacher.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     private void SetDepartmentTableViewProperties(){
@@ -301,6 +364,27 @@ public class Controller {
         TableView_Department.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
+    public void ShowAllTeacher(ActionEvent actionEvent) {
+        teachers.clear();
+        teachers = Database.DatabaseConnection.GetAllTeachers();
+        SetTeacherTableViewProperties();
+        TableView_Teacher.refresh();
+        ShowAllTeacherCount();
+
+
+        TableView_Teacher.setDisable(false);
+        TableView_Teacher.setOpacity(1);
+
+        //TableColumn_StudentDepartment.setVisible(true);
+
+        TableView_Student.setDisable(true);
+        TableView_Student.setOpacity(0);
+        TableView_Department.setDisable(true);
+        TableView_Department.setOpacity(0);
+
+        SetStudentButtonBoxVisible(true);
+
+    }
 
 
     public class ErrorAlert{

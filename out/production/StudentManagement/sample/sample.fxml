@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="1200.0" prefHeight="850.0" prefWidth="1400.0" style="-fx-background-color: #21015C;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="1200.0" prefHeight="850.0" prefWidth="1400.0" style="-fx-background-color: #21015C;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <HBox prefHeight="100.0" prefWidth="1259.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -19,6 +25,7 @@
                            <children>
                               <Button alignment="CENTER" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowDepartments" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="Departments" textAlignment="CENTER" />
                               <Button fx:id="Button_AllStudent" alignment="CENTER" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowAllStudent" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="All Students" />
+                              <Button fx:id="Button_Teacher" mnemonicParsing="false" onAction="#ShowAllTeacher" text="Teacher" />
                            </children>
                         </VBox>
                      </children>
@@ -53,9 +60,12 @@
                             <TableColumn fx:id="TableColumn_StudentID" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Numara" />
                             <TableColumn fx:id="TableColumn_StudentName" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Ad" />
                               <TableColumn fx:id="TableColumn_StudentSurname" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Soyad" />
+                              <TableColumn fx:id="TableColumn_StudentPassword" maxWidth="200.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Parola" />
                               <TableColumn fx:id="TableColumn_StudentEmail" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="E-Posta" />
                               <TableColumn fx:id="TableColumn_StudentDepartment" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="Bölüm" />
-                              <TableColumn fx:id="TableColumn_StudentPassword" maxWidth="200.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Parola" />
+                              <TableColumn fx:id="TableColumn_StudentRegisteredDate" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="Kayıt Tarihi" />
+                              <TableColumn fx:id="TableColumn_StudentSemester" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="Dönem" />
+                              <TableColumn fx:id="TableColumn_StudentAdvisorID" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="Danışman" />
                           </columns>
                         </TableView>
                         <TableView fx:id="TableView_Department" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="725.0" prefWidth="1000.0" style="-fx-: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -64,6 +74,18 @@
                               <TableColumn fx:id="TableColumn_DepartmentLanguage" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Dil" />
                               <TableColumn fx:id="TableColumn_DepartmentChair" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Başkan" />
                               <TableColumn fx:id="TableColumn_DepartmentStudent" maxWidth="150.0" minWidth="50.0" prefWidth="100.0" text="Göster" />
+                           </columns>
+                        </TableView>
+                        <TableView fx:id="TableView_Teacher" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="730.0" prefWidth="1010.0" style="-fx-background-color: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <columns>
+                              <TableColumn fx:id="TableColumn_TeacherId" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Numara" />
+                              <TableColumn fx:id="TableColumn_TeacherName" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Ad" />
+                              <TableColumn fx:id="TableColumn_TeacherSurname" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Soyad" />
+                              <TableColumn fx:id="TableColumn_TeacherEmail" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="E-Posta" />
+                              <TableColumn fx:id="TableColumn_TeacherTitle" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="Unvan" />
+                              <TableColumn fx:id="TableColumn_TeacherPassword" maxWidth="200.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Parola" />
+                              <TableColumn fx:id="TableColumn_TeacherDepartment" maxWidth="200.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Bolum " />
+                              <TableColumn fx:id="TableColumn_TeacherRegisteredDate" maxWidth="200.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Kayıt Tarihi" />
                            </columns>
                         </TableView>
                      </children>

@@ -31,6 +31,10 @@ public class Database{
                     student.setEmail(resultSet.getString("Email"));
                     student.setPassword(resultSet.getString("Password"));
                     student.setDepartmentID(String.valueOf(resultSet.getInt("DepartmentID")));
+                   // student.setRegisteredDate(resultSet.getDate("RegisteredDate").toString());
+                 //   student.setSemester(resultSet.getInt("Semester"));
+                   // student.setAdvisorID(resultSet.getInt("AdvisorID"));
+
                     students.add(student);
                 }
                 connection.close();
@@ -213,46 +217,72 @@ public class Database{
                 System.out.println("Connection Problem " + e.getMessage());
                 return 0;
             }
+        }
+        public static int GetStudentCountByDepartmentID(int ID){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+                Statement statement = connection.createStatement();
 
+                String sqlScript = String.format("SELECT COUNT(ID) as [Count] FROM StudentTable Where DepartmentID = %d",ID);
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+                resultSet.next();
+                int count = resultSet.getInt("Count");
+                connection.close();
+                return count;
+            }catch(Exception e){
+                System.out.println("Connection Problem " + e.getMessage());
+                return 0;
+            }
+        }
+        public static int GetTeacherCount(){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+                Statement statement = connection.createStatement();
+
+                String sqlScript = String.format("SELECT COUNT(ID) as [Count] FROM Teacher");
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+                resultSet.next();
+                int count = resultSet.getInt("Count");
+                connection.close();
+                return count;
+            }catch(Exception e){
+                System.out.println("Connection Problem " + e.getMessage());
+                return 0;
+            }
         }
 
+        public static ObservableList<Teacher> GetAllTeachers(){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+                Statement statement = connection.createStatement();
+                //CallableStatement stmt = connection.prepareCall("{}")
 
+                String sqlScript = "SELECT * FROM Teacher";                                                             //PROCEDURE
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+                final ObservableList<Teacher> teachers = FXCollections.observableArrayList();
+
+                int i = 0;
+                while(true){
+                    resultSet.next();
+                    if(resultSet.isAfterLast()) break;
+                    Teacher teacher = new Teacher();
+                    teacher.setID(resultSet.getInt("ID"));
+                    teacher.setName(resultSet.getString("Name"));
+                    teacher.setSurname(resultSet.getString("Surname"));
+                    teacher.setEmail(resultSet.getString("Email"));
+                    teacher.setTitle(resultSet.getString("Title"));
+                    teacher.setPassword(resultSet.getString("Password"));
+                    teacher.setDepartmentID(String.valueOf(resultSet.getInt("DepartmentID")));
+                    teacher.setRegisteredDate(String.valueOf(resultSet.getInt("RegisteredDate")));
+
+                    teachers.add(teacher);
+                }
+                connection.close();
+                return teachers;
+            }catch(Exception e){
+                System.out.println("Connection Error: " + e.getMessage());
+            }
+            return null;
+        }
     }
-
-
 }
-
-
-/*
-insert into StudentTable (Name,Surname,Password,Email,DepartmentID) values(LTRIM(RTRIM('   aAaErdem')),LTRIM(RTRIM('DEMİR')),LTRIM(RTRIM('parolamız')),LTRIM(RTRIM('se@@sss')),LTRIM(RTRIM(1000)))
-Insert into StudentTable (Name,Surname,Password,Email,DepartmentID) Values('%s','%s','%s','%s','%d')
-
-
-
-
-Create Procedure spAddStudent
-
-@Name nvarchar(50),
-@Surname nvarchar(50),
-@Password nvarchar(50),
-@Email nvarchar(50),
-@DepartmentID int
-
-as
-Begin
-insert into StudentTable (Name,Surname,Password,Email,DepartmentID)
-values(LTRIM(RTRIM('%s')),LTRIM(RTRIM('%s')),LTRIM(RTRIM('%s')),LTRIM(RTRIM('%s')),LTRIM(RTRIM('%d')))
-End
-
-spAddStudent
-
-Create Procedure spAllStudent
-as
-Begin
-SELECT * FROM StudentTable
-End
-
-spAllStudent
-
-
- */
