@@ -62,8 +62,6 @@ public class Student {
         DepartmentName = departmentName;
     }
 
-
-
     public Integer getSemester() {
         return Semester;
     }
@@ -88,6 +86,14 @@ public class Student {
         RegisteredDate = registeredDate;
     }
 
+    public String getRegisteredDateFormatted() {
+        return RegisteredDateFormatted;
+    }
+
+    public void setRegisteredDateFormatted(String registeredDateFormatted) {
+        RegisteredDateFormatted = registeredDateFormatted;
+    }
+
 
     String DepartmentName;
     int ID;
@@ -110,6 +116,7 @@ public class Student {
 
 
     Date RegisteredDate;
+    String RegisteredDateFormatted;
     Integer Semester;
     Integer AdvisorID;
 

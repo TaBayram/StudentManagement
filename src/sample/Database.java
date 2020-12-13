@@ -34,6 +34,7 @@ public class Database{
                     student.setPassword(resultSet.getString("Password"));
                     student.setDepartmentID(String.valueOf(resultSet.getInt("DepartmentID")));
                     student.setRegisteredDate(resultSet.getDate("RegisteredDate"));
+                    student.setRegisteredDateFormatted(resultSet.getString("RegisteredDateFormatted"));
                     student.setSemester(resultSet.getInt("Semester"));
                     student.setAdvisorID(resultSet.getInt("AdvisorID"));
 
@@ -317,7 +318,7 @@ public class Database{
 
                 Statement statement = connection.createStatement();
                 //INSERT VALUES
-                String sqlScript = String.format("spAddTeacher '%s', '%s','%s', '%s', %d", teacher.getName(),teacher.getSurname(),teacher.getPassword(),teacher.getEmail(), Integer.parseInt(teacher.getDepartmentID()));
+                String sqlScript = String.format("spAddTeacher '%s', '%s','%s','%s', '%s', %d", teacher.getName(),teacher.getSurname(),teacher.getPassword(),teacher.getEmail(),teacher.getTitle(), Integer.parseInt(teacher.getDepartmentID()));
                 ResultSet resultSet = statement.executeQuery(sqlScript);
                 int id = 0;
                 resultSet.next();
@@ -333,14 +334,14 @@ public class Database{
 
 
         }
-        /*
+
         public static boolean AlterTeacher(Teacher teacher){
             try{
                 Connection connection = DriverManager.getConnection(url);
 
                 Statement statement = connection.createStatement();
                 //INSERT VALUES
-                String sqlScript = String.format("spUpdateStudent  %d,'%s', '%s','%s', '%s', %d", student.getID(),student.getName(),student.getSurname(),student.getPassword(),student.getEmail(), Integer.parseInt(student.getDepartmentID()));
+                String sqlScript = String.format("spUpdateTeacher  %d,'%s', '%s','%s', '%s', '%s', %d", teacher.getID(),teacher.getName(),teacher.getSurname(),teacher.getPassword(),teacher.getEmail(), teacher.getTitle(),  Integer.parseInt(teacher.getDepartmentID()));
                 int result = statement.executeUpdate(sqlScript);
                 boolean updated = false;
                 if(result != 0) updated = true;
@@ -352,13 +353,13 @@ public class Database{
             }
         }
         public static boolean RemoveTeacher(Teacher teacher){
-            int id = student.getID();
+            int id = teacher.getID();
             try{
                 Connection connection = DriverManager.getConnection(url);
 
                 Statement statement = connection.createStatement();
                 //Delete
-                String sqlScript = String.format("Delete from StudentTable Where ID = '%d'", id);
+                String sqlScript = String.format("Delete from TeacherTable Where ID = '%d'", id);
                 statement.executeUpdate(sqlScript);
                 connection.close();
                 return true;
@@ -367,27 +368,46 @@ public class Database{
                 return false;
             }
 
-        }*/
+        }
 
         /*##################### MISC #################################*/
 
-
-        public static int GetStudentCount(){
+        public static ObservableList<Person> GetAllPeople(){
             try{
                 Connection connection = DriverManager.getConnection(url);
                 Statement statement = connection.createStatement();
 
-                String sqlScript = String.format("SELECT COUNT(ID) as [Count] FROM StudentTable");
+                String sqlScript = "select id,name,surname,password,email,departmentID,Convert(nvarchar,RegisteredDate) as RegisteredDateFormatted from  StudentTable" +
+                        " union all" +
+                        " select id,name,surname,password,email,departmentID,Convert(nvarchar,RegisteredDate) as RegisteredDateFormatted from TeacherTable";                                                             //UNION
                 ResultSet resultSet = statement.executeQuery(sqlScript);
-                resultSet.next();
-                int count = resultSet.getInt("Count");
+                final ObservableList<Person> people = FXCollections.observableArrayList();
+
+                int i = 0;
+                while(true){
+                    boolean isNext =  resultSet.next();
+                    if(resultSet.isAfterLast() || !isNext) break;
+                    Person person = new Person();
+                    person.setID(resultSet.getInt("ID"));
+                    person.setName(resultSet.getString("Name"));
+                    person.setSurname(resultSet.getString("Surname"));
+                    person.setEmail(resultSet.getString("Email"));
+                    person.setPassword(resultSet.getString("Password"));
+                    person.setDepartmentID(String.valueOf(resultSet.getInt("DepartmentID")));
+                    person.setRegisteredDateFormatted(resultSet.getString("RegisteredDateFormatted"));
+
+                    people.add(person);
+                }
                 connection.close();
-                return count;
+                return people;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
-                return 0;
+                System.out.println("Connection Error: " + e.getMessage());
             }
+            return null;
         }
+
+
+
         public static int GetStudentCountByDepartmentID(int ID){
             try{
                 Connection connection = DriverManager.getConnection(url);
@@ -404,19 +424,25 @@ public class Database{
                 return 0;
             }
         }
-        public static int GetTeacherCount(){
+
+        public static int GetCount(String table){
+            if(table.equals("Person")){
+                return (GetCount("Student") + GetCount("Teacher"));
+            }
+
             try{
+                String fullName = table+"Table";
                 Connection connection = DriverManager.getConnection(url);
                 Statement statement = connection.createStatement();
 
-                String sqlScript = String.format("SELECT COUNT(ID) as [Count] FROM TeacherTable");
+                String sqlScript = String.format("SELECT COUNT(ID) as [Count] FROM %s",fullName);
                 ResultSet resultSet = statement.executeQuery(sqlScript);
                 resultSet.next();
                 int count = resultSet.getInt("Count");
                 connection.close();
                 return count;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                System.out.println("Connection Problem Count " + e.getMessage());
                 return 0;
             }
         }

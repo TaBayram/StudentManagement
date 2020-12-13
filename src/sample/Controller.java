@@ -64,6 +64,15 @@ public class Controller {
     public AnchorPane AnchorPane_Main;
 
 
+    public TableView TableView_Person;
+    public TableColumn TableColumn_PersonID;
+    public TableColumn TableColumn_PersonName;
+    public TableColumn TableColumn_PersonSurname;
+    public TableColumn TableColumn_PersonEmail;
+    public TableColumn TableColumn_PersonDepartment;
+    public TableColumn TableColumn_PersonRegisteredDate;
+    public TableColumn TableColumn_PersonPassword;
+
 
     /*_______________________________________________________________________*/
     /*##################### STUDENT TABLE #################################*/
@@ -79,7 +88,6 @@ public class Controller {
         if(students.size() == 0){StudentAdd(null); }
         SetStudentTableViewProperties();
         TableView_Student.refresh();
-        ShowAllStudentCount();
 
         TableColumn_StudentDepartment.setVisible(true);
 
@@ -172,7 +180,7 @@ public class Controller {
                 if (id != 0) {
                     student.setID(id);
                     TableView_Student.refresh();
-                    ShowAllStudentCount();
+
                 }
             }
             else{
@@ -220,7 +228,7 @@ public class Controller {
         TableColumn_StudentEmail.setCellValueFactory(new PropertyValueFactory<Student, String>("Email"));
         TableColumn_StudentPassword.setCellValueFactory(new PropertyValueFactory<Student, String>("Password"));
         TableColumn_StudentDepartment.setCellValueFactory(new PropertyValueFactory<Student, String>("DepartmentID"));
-        TableColumn_StudentRegisteredDate.setCellValueFactory(new PropertyValueFactory<Student, Date>("RegisteredDate"));
+        TableColumn_StudentRegisteredDate.setCellValueFactory(new PropertyValueFactory<Student, String>("RegisteredDateFormatted"));
         TableColumn_StudentSemester.setCellValueFactory(new PropertyValueFactory<Student, Integer>("Semester"));
         TableColumn_StudentAdvisorID.setCellValueFactory(new PropertyValueFactory<Student, Integer>("AdvisorID"));
 
@@ -325,7 +333,6 @@ public class Controller {
         if(teachers.size() == 0){TeacherAdd(null); }
         SetTeacherTableViewProperties();
         TableView_Teacher.refresh();
-        ShowAllTeacherCount();
 
 
         //TableColumn_StudentDepartment.setVisible(true);
@@ -333,7 +340,6 @@ public class Controller {
         MainPaneHideOthersExceptThis(TableView_Teacher);
 
     }
-
 
 
     public void ShowTeachersDepartmentName(ActionEvent actionEvent) {
@@ -369,11 +375,72 @@ public class Controller {
             }
         }
         for (Teacher teacher: removedTeachers) {
-            students.remove(teacher);
+            teachers.remove(teacher);
         }
 
     }
 
+    public void TeacherTableChangeCommit(TableColumn.CellEditEvent event){
+
+        var column = (TableColumn)event.getSource();
+        Teacher teacher = (Teacher)event.getRowValue();
+        var columnID = column.getId();
+
+        if(columnID.endsWith("rName")){
+            teacher.setName((String) event.getNewValue());
+        }
+        if(columnID.endsWith("rSurname")){
+            teacher.setSurname((String) event.getNewValue());
+        }
+        if(columnID.endsWith("rEmail")){
+            teacher.setEmail((String) event.getNewValue());
+        }
+        if(columnID.endsWith("rPassword")){
+            teacher.setPassword((String) event.getNewValue());
+        }
+        if(columnID.endsWith("rTitle")){
+            teacher.setTitle((String) event.getNewValue());
+        }
+
+        if(columnID.endsWith("rDepartment")){
+            if(isDepartmentColumnID) teacher.setDepartmentID((String) event.getNewValue());
+            else teacher.setDepartmentName((String) event.getNewValue());
+        }
+
+        //CHECK IF CELLS ARE IN CORRECT FORMAT
+        if(teacher.getName() != "Giriniz" && teacher.getSurname() != "Giriniz" && teacher.getDepartmentID() != "0" && teacher.getPassword() != "Giriniz"){
+
+            if (HasSpecialCharacters("Name",teacher.getName())) return;
+            if (HasSpecialCharacters("Surname",teacher.getSurname())) return;
+            if (!HasTeacherCorrectEmailFormat(teacher,true)) return;
+            if (!HasCorrectPasswordFormat(teacher.getPassword())) return;
+
+            //CHECK THE DEPARTMENT IF EXIST
+            try {
+                int departmentID = Integer.parseInt(teacher.getDepartmentID());
+                if (!Database.DatabaseConnection.DoesDepartmentExist(departmentID)) {
+                    ErrorAlert errorAlert = new ErrorAlert("Department does not exist");
+                    return;
+                }
+            }
+            catch (NumberFormatException e){
+                ErrorAlert errorAlert = new ErrorAlert("Department ID must be numeric");
+            }
+
+            if(teacher.getID() == 0) {
+                int id = Database.DatabaseConnection.AddTeacher(teacher);
+                if (id != 0) {
+                    teacher.setID(id);
+                    TableView_Teacher.refresh();
+                }
+            }
+            else{
+                Database.DatabaseConnection.AlterTeacher(teacher);
+            }
+
+        }
+
+    }
 
     private void SetTeacherTableViewProperties(){
 
@@ -383,7 +450,7 @@ public class Controller {
         TableColumn_TeacherPassword.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_TeacherDepartment.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_TeacherTitle.setCellFactory(TextFieldTableCell.<String>forTableColumn());
-        TableColumn_TeacherRegisteredDate.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        //TableColumn_TeacherRegisteredDate.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         //TableColumn_StudentDepartment.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
         TableColumn_TeacherID.setCellValueFactory(new PropertyValueFactory<Teacher, Integer>("ID"));
@@ -401,22 +468,43 @@ public class Controller {
     }
 
     /*##################### MISC ######################################*/
+    ObservableList<Person> people = FXCollections.observableArrayList();
+
+    public void ShowAllPeople(ActionEvent actionEvent) {
+        people.clear();
+        people = Database.DatabaseConnection.GetAllPeople();
+        if(people.size() == 0){ErrorAlert errorAlert = new ErrorAlert("There are no people to show!"); return; }
+        SetPersonTableViewProperties();
+        TableView_Person.refresh();
+        //ShowAllTeacherCount();
 
 
+        //TableColumn_StudentDepartment.setVisible(true);
 
+        MainPaneHideOthersExceptThis(TableView_Person);
+
+    }
+
+    private void SetPersonTableViewProperties(){
+
+        TableColumn_PersonID.setCellValueFactory(new PropertyValueFactory<Person, Integer>("ID"));
+        TableColumn_PersonName.setCellValueFactory(new PropertyValueFactory<Person, String>("Name"));
+        TableColumn_PersonSurname.setCellValueFactory(new PropertyValueFactory<Person, String>("Surname"));
+        TableColumn_PersonEmail.setCellValueFactory(new PropertyValueFactory<Person, String>("Email"));
+        TableColumn_PersonRegisteredDate.setCellValueFactory(new PropertyValueFactory<Person, String>("RegisteredDateFormatted"));
+        TableColumn_PersonPassword.setCellValueFactory(new PropertyValueFactory<Person, String>("Password"));
+        TableColumn_PersonDepartment.setCellValueFactory(new PropertyValueFactory<Person, String>("DepartmentID"));
+
+        TableView_Person.setEditable(false);
+        TableView_Person.setItems(people);
+        TableView_Person.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    }
 
     public void SetSelectedDepartmentID(int ID){
         selectedDepartmentID = ID;
     }
 
 
-
-    public void ShowAllStudentCount(){
-        Label_Count.textProperty().setValue("Student Count: " + String.valueOf(Database.DatabaseConnection.GetStudentCount()));
-    }
-    public void ShowAllTeacherCount(){
-        Label_Count.textProperty().setValue("Student Count: " + String.valueOf(Database.DatabaseConnection.GetTeacherCount()));
-    }
     public void ShowAllStudentCountByDepartment(){
         Label_Count.textProperty().setValue("Student Count: " + String.valueOf(Database.DatabaseConnection.GetStudentCountByDepartmentID(selectedDepartmentID)));
     }
@@ -425,14 +513,18 @@ public class Controller {
     public void MainPaneHideOthersExceptThis(Node control){
         for (Node childControl : AnchorPane_Main.getChildren()) {
             if (childControl == control){
-                String name = control.getId().substring(control.getId().indexOf("_"));
+                String name = control.getId().substring(control.getId().indexOf("_") + 1);
+                boolean hasFoundIt = false;
                 for (Node childControl2 : Pane_Buttons.getChildren()) {
                     if(childControl2.getId().contains(name)){
                         ButtonPaneHideOthersExceptThis(childControl2);
+                        hasFoundIt = true;
                         break;
                     }
                 }
-                if(control.isDisable() == false){
+                if(!hasFoundIt) ButtonPaneHideOthersExceptThis(null);
+                Label_Count.textProperty().setValue(name + " Count: " + Database.DatabaseConnection.GetCount(name));
+                if(!control.isDisable()){
                     control.setOpacity(0);
                     control.setDisable(true);
                 }
