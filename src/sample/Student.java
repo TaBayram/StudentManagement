@@ -2,6 +2,8 @@ package sample;
 
 import javafx.util.converter.DateTimeStringConverter;
 
+import java.util.Date;
+
 public class Student {
 
     public int getID() {
@@ -78,11 +80,11 @@ public class Student {
         AdvisorID = advisorID;
     }
 
-    public String getRegisteredDate() {
+    public Date getRegisteredDate() {
         return RegisteredDate;
     }
 
-    public void setRegisteredDate(String registeredDate) {
+    public void setRegisteredDate(Date registeredDate) {
         RegisteredDate = registeredDate;
     }
 
@@ -93,11 +95,24 @@ public class Student {
     String Surname;
     String Password;
     String Email;
+
+    public Student() {
+        ID = 0;
+        DepartmentName = enter;
+        Name = enter;
+        Surname = enter;
+        Password = enter;
+        Email = enter;
+        DepartmentID = enter;
+    }
+
     String DepartmentID;
 
 
-    String RegisteredDate;
+    Date RegisteredDate;
     Integer Semester;
     Integer AdvisorID;
+
+    String enter = "Giriniz";
 
 }

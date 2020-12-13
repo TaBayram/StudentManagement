@@ -1,5 +1,7 @@
 package sample;
 
+import java.util.Date;
+
 public class Teacher {
 
 
@@ -60,19 +62,44 @@ public class Teacher {
         DepartmentID = departmentID;
     }
 
-    public String getRegisteredDate() {
+    public Date getRegisteredDate() {
         return RegisteredDate;
     }
 
-    public void setRegisteredDate(String registeredDate) {
+    public void setRegisteredDate(Date registeredDate) {
         RegisteredDate = registeredDate;
     }
     int ID;
+
+
+
     String Name;
     String Surname;
     String Email;
     String Title;
     String Password;
     String DepartmentID;
-    String RegisteredDate;
+    Date RegisteredDate;
+
+    public Teacher() {
+        ID = 0;
+        Name = enter;
+        Surname = enter;
+        Email = enter;
+        Title = enter;
+        Password = enter;
+        DepartmentID = enter;
+    }
+
+    public String getDepartmentName() {
+        return DepartmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        DepartmentName = departmentName;
+    }
+
+    String DepartmentName;
+    String enter = "Giriniz";
+
 }
