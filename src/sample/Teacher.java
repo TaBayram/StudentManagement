@@ -80,6 +80,8 @@ public class Teacher {
     String Password;
     String DepartmentID;
     Date RegisteredDate;
+    String DepartmentName;
+    String enter = "Giriniz";
 
     public Teacher() {
         ID = 0;
@@ -99,7 +101,6 @@ public class Teacher {
         DepartmentName = departmentName;
     }
 
-    String DepartmentName;
-    String enter = "Giriniz";
+
 
 }

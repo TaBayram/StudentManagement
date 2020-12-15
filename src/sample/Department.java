@@ -28,11 +28,11 @@ public class Department {
         this.language = language;
     }
 
-    public int getDepartmentChair() {
+    public String getDepartmentChair() {
         return DepartmentChair;
     }
 
-    public void setDepartmentChair(int departmentChair) {
+    public void setDepartmentChair(String departmentChair) {
         DepartmentChair = departmentChair;
     }
 
@@ -44,9 +44,29 @@ public class Department {
         this.button = button;
     }
 
+    public String getDepartmentFacultyID() {
+        return DepartmentFacultyID;
+    }
+
+    public void setDepartmentFacultyID(String departmentFacultyID) {
+        DepartmentFacultyID = departmentFacultyID;
+    }
+
+
     int ID;
     String Name;
     String language;
-    int DepartmentChair;
+    String DepartmentChair;
     Button button;
+    String DepartmentFacultyID;
+
+    String enter = "Giriniz";
+    public Department() {
+        this.ID = ID;
+        Name = enter;
+        this.language = enter;
+        DepartmentChair = enter;
+        this.button = button;
+        DepartmentFacultyID = enter;
+    }
 }

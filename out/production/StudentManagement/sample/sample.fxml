@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="1200.0" prefHeight="850.0" prefWidth="1400.0" style="-fx-background-color: #21015C;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="1200.0" prefHeight="850.0" prefWidth="1400.0" style="-fx-background-color: #21015C;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <HBox prefHeight="100.0" prefWidth="1259.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -25,6 +25,7 @@
                            </padding>
                            <children>
                               <Button alignment="CENTER" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowDepartments" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="Departments" textAlignment="CENTER" />
+                              <Button fx:id="Button_Faculty" layoutX="125.0" layoutY="145.0" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowFaculty" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="Faculty" />
                               <Button fx:id="Button_AllStudent" alignment="CENTER" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowAllStudent" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="All Students" />
                               <Button fx:id="Button_Teacher" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowAllTeacher" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="All Teachers" />
                               <Button fx:id="Button_Person" layoutX="123.0" layoutY="145.0" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowAllPeople" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="People" />
@@ -70,9 +71,20 @@
                               <HBox fx:id="HBox_Department" alignment="CENTER_RIGHT" disable="true" opacity="0.0" prefHeight="75.0" prefWidth="1050.0" spacing="25.0">
                                  <children>
                                     <CheckBox fx:id="CheckBox_StudentDepartmentName1" mnemonicParsing="false" onAction="#ShowStudentsDepartmentName" text="Başkan Adı" textFill="WHITE" />
-                                    <Button fx:id="Button_DepartmentDelete" mnemonicParsing="false" onAction="#StudentRemove" styleClass="regularbutton" text="Bölüm Sil" />
-                                    <Button mnemonicParsing="false" styleClass="regularbutton" text="Böö" />
-                                    <Button fx:id="Button_DepartmentAdd" mnemonicParsing="false" onAction="#StudentAdd" styleClass="regularbutton" text="Bölüm Ekle" />
+                                    <Button fx:id="Button_DepartmentDelete" mnemonicParsing="false" onAction="#DepartmentRemove" styleClass="regularbutton" text="Bölüm Sil" />
+                                    <Button mnemonicParsing="false" styleClass="regularbutton" text="Bölüm Güncelle" />
+                                    <Button fx:id="Button_DepartmentAdd" mnemonicParsing="false" onAction="#DepartmentAdd" styleClass="regularbutton" text="Bölüm Ekle" />
+                                 </children>
+                                 <padding>
+                                    <Insets left="50.0" right="50.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox fx:id="HBox_Faculty" alignment="CENTER_RIGHT" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="75.0" prefWidth="1050.0" spacing="25.0">
+                                 <children>
+                                    <CheckBox fx:id="CheckBox_StudentDepartmentName11" mnemonicParsing="false" onAction="#ShowStudentsDepartmentName" text="Başkan Adı" textFill="WHITE" />
+                                    <Button fx:id="Button_FacultyDelete" mnemonicParsing="false" onAction="#FacultyRemove" styleClass="regularbutton" text="Fackülte Sil" />
+                                    <Button mnemonicParsing="false" styleClass="regularbutton" text="Fakülte Güncelle" />
+                                    <Button fx:id="Button_FacultyAdd" mnemonicParsing="false" onAction="#FacultyAdd" styleClass="regularbutton" text="Fakülte Ekle" />
                                  </children>
                                  <padding>
                                     <Insets left="50.0" right="50.0" />
@@ -90,18 +102,20 @@
                             <TableColumn fx:id="TableColumn_StudentName" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Ad" />
                               <TableColumn fx:id="TableColumn_StudentSurname" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Soyad" />
                               <TableColumn fx:id="TableColumn_StudentPassword" maxWidth="200.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Parola" />
-                              <TableColumn fx:id="TableColumn_StudentEmail" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="E-Posta" />
-                              <TableColumn fx:id="TableColumn_StudentDepartment" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Bölüm" />
-                              <TableColumn fx:id="TableColumn_StudentRegisteredDate" maxWidth="120.0" minWidth="60.0" onEditCommit="#StudentTableChangeCommit" prefWidth="90.0" text="Kayıt Tarihi" />
-                              <TableColumn fx:id="TableColumn_StudentSemester" maxWidth="75.0" minWidth="25.0" onEditCommit="#StudentTableChangeCommit" prefWidth="50.0" text="Dönem" />
-                              <TableColumn fx:id="TableColumn_StudentAdvisorID" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Danışman" />
+                              <TableColumn fx:id="TableColumn_StudentEmail" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="179.0" text="E-Posta" />
+                              <TableColumn fx:id="TableColumn_StudentDepartment" maxWidth="150.0" minWidth="20.0" onEditCommit="#StudentTableChangeCommit" prefWidth="66.0" text="Bölüm" />
+                              <TableColumn fx:id="TableColumn_StudentRegisteredDate" maxWidth="134.0" minWidth="39.0" onEditCommit="#StudentTableChangeCommit" prefWidth="99.0" text="Kayıt Tarihi" />
+                              <TableColumn fx:id="TableColumn_StudentSemester" maxWidth="102.0" minWidth="25.0" onEditCommit="#StudentTableChangeCommit" prefWidth="67.0" text="Dönem" />
+                              <TableColumn fx:id="TableColumn_StudentAdvisorID" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="82.0" text="Danışman" />
                           </columns>
                         </TableView>
                         <TableView fx:id="TableView_Department" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="725.0" prefWidth="1000.0" style="-fx-: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <columns>
+                              <TableColumn fx:id="TableColumn_DepartmentID" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Numara" />
                               <TableColumn fx:id="TableColumn_DepartmentName" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Ad" />
                               <TableColumn fx:id="TableColumn_DepartmentLanguage" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Dil" />
                               <TableColumn fx:id="TableColumn_DepartmentChair" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Başkan" />
+                              <TableColumn fx:id="TableColumn_DepartmentFacultyID" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Fakülte ID" />
                               <TableColumn fx:id="TableColumn_DepartmentStudent" maxWidth="150.0" minWidth="50.0" prefWidth="100.0" text="Göster" />
                            </columns>
                         </TableView>
@@ -126,6 +140,13 @@
                               <TableColumn fx:id="TableColumn_PersonEmail" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="150.0" text="E-Posta" />
                               <TableColumn fx:id="TableColumn_PersonDepartment" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Bölüm" />
                               <TableColumn fx:id="TableColumn_PersonRegisteredDate" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Kayıt Tarihi" />
+                           </columns>
+                        </TableView>
+                        <TableView fx:id="TableView_Faculty" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="730.0" prefWidth="1010.0" style="-fx-background-color: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <columns>
+                              <TableColumn fx:id="TableColumn_FacultyID" maxWidth="100.0" minWidth="50.0" onEditCommit="#FacultyTableChangeCommit" prefWidth="75.0" text="Fakülte ID" />
+                              <TableColumn fx:id="TableColumn_FacultyName" maxWidth="226.0" minWidth="50.0" onEditCommit="#FacultyTableChangeCommit" prefWidth="226.0" text="Fakülte İsmi" />
+                              <TableColumn fx:id="TableColumn_FacultyChair" maxWidth="200.0" minWidth="0.0" onEditCommit="#FacultyTableChangeCommit" prefWidth="120.0" text="Fakülte Başkanı" />
                            </columns>
                         </TableView>
                      </children>

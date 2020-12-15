@@ -31,16 +31,28 @@ public class Controller {
     public TableColumn TableColumn_StudentPassword;
     public TableColumn TableColumn_StudentDepartment;
 
+
     public Button Button_StudentAdd;
     public Button Button_StudentDelete;
 
     public TableView TableView_Department;
+    public TableColumn TableColumn_DepartmentID;
     public TableColumn TableColumn_DepartmentName;
     public TableColumn TableColumn_DepartmentLanguage;
     public TableColumn TableColumn_DepartmentChair;
     public TableColumn TableColumn_DepartmentStudent;
-    public CheckBox CheckBox_StudentDepartmentName;
+    public TableColumn TableColumn_DepartmentFacultyID;
 
+    public TableView TableView_Faculty;
+    public TableColumn TableColumn_FacultyID;
+    public TableColumn TableColumn_FacultyName;
+    public TableColumn TableColumn_FacultyChair;
+
+    public Button Button_FacultyAdd;
+    public Button Button_FacultyDelete;
+
+
+    public CheckBox CheckBox_StudentDepartmentName;
 
     public Pane Pane_Buttons;
 
@@ -72,9 +84,92 @@ public class Controller {
     public TableColumn TableColumn_PersonDepartment;
     public TableColumn TableColumn_PersonRegisteredDate;
     public TableColumn TableColumn_PersonPassword;
+    public Button Button_Faculty;
+    public Button Button_AllStudent;
+    public Button Button_Person;
 
 
     /*_______________________________________________________________________*/
+    /*##################### STUDENT TABLE #################################*/
+    ObservableList<Faculty> faculties = FXCollections.observableArrayList();
+
+    public void ShowFaculty(ActionEvent actionEvent) {
+        faculties.clear();
+        faculties =  Database.DatabaseConnection.GetAllFaculties();
+        if(faculties.size() == 0){FacultyAdd(null); }
+        SetFacultyTableViewProperties();
+        TableView_Faculty.refresh();
+        MainPaneHideOthersExceptThis(TableView_Faculty);
+    }
+
+    public void FacultyTableChangeCommit(TableColumn.CellEditEvent event) {
+        var column = (TableColumn)event.getSource();
+        Faculty faculty = (Faculty) event.getRowValue();
+        var columnID = column.getId();
+
+        if(columnID.endsWith("yName")){
+            faculty.setName((String) event.getNewValue());
+        }
+        if(columnID.endsWith("yFacultyChair")){
+            faculty.setFacultyChair((String) event.getNewValue());
+        }
+
+
+        //CHECK IF CELLS ARE IN CORRECT FORMAT
+        if(faculty.getName() != "Giriniz" && faculty.getFacultyChair() != "Giriniz"){
+
+
+            if (HasSpecialCharacters("Name",faculty.getName())) return;
+            if (HasSpecialCharacters("FacultyChair",faculty.getFacultyChair())) return;
+
+
+            int id = Database.DatabaseConnection.AddFaculty(faculty);
+            if(id != 0){
+                faculty.setID(id);
+                TableView_Faculty.refresh();
+            }
+            else{
+                Database.DatabaseConnection.AlterFaculty(faculty);
+            }
+
+        }
+
+    }
+
+    private void SetFacultyTableViewProperties(){
+
+        TableColumn_FacultyName.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        TableColumn_FacultyChair.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+
+        TableColumn_FacultyID.setCellValueFactory(new PropertyValueFactory<Faculty, Integer>("ID"));
+        TableColumn_FacultyName.setCellValueFactory(new PropertyValueFactory<Faculty, String>("Name"));
+        TableColumn_FacultyChair.setCellValueFactory(new PropertyValueFactory<Faculty, String>("FacultyChair"));
+
+        TableView_Faculty.setEditable(true);
+        TableView_Faculty.setItems(faculties);
+        TableView_Faculty.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    }
+
+    public void FacultyAdd(ActionEvent actionEvent) {
+        Faculty faculty = new Faculty();
+        faculties.add(faculty);
+    }
+
+    public void FacultyRemove(ActionEvent actionEvent) {
+        ObservableList<Faculty> selectedFaculties = TableView_Faculty.getSelectionModel().getSelectedItems();
+        ObservableList<Faculty> removedFaculties = FXCollections.observableArrayList();
+        for (Faculty faculty: selectedFaculties) {
+            if(Database.DatabaseConnection.RemoveFaculty(faculty)){
+                removedFaculties.add(faculty);
+            }
+        }
+        for (Faculty faculty: removedFaculties) {
+            faculties.remove(faculty);
+        }
+    }
+
+
+
     /*##################### STUDENT TABLE #################################*/
     ObservableList<Student> students = FXCollections.observableArrayList();
 
@@ -119,8 +214,6 @@ public class Controller {
         student.setDepartmentID(String.valueOf(selectedDepartmentID));
 
         students.add(student);
-
-
     }
 
     public void StudentRemove(ActionEvent actionEvent) {
@@ -206,8 +299,6 @@ public class Controller {
         }
     }
 
-
-
     private void SetStudentTableViewProperties(){
 
 
@@ -239,27 +330,6 @@ public class Controller {
 
     /*##################### DEPARTMENT TABLE #################################*/
     ObservableList<Department> departments = FXCollections.observableArrayList();
-
-    @FXML
-    public void ShowDepartments(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
-        departments.clear();
-        departments =  Database.DatabaseConnection.GetAllDepartments();
-        SetStudentTableViewProperties();
-
-        for (Department department: departments) {
-            department.setButton(new Button("Show Student"));
-            department.getButton().setOnAction(OnDepartmentClick);
-            department.getButton().getStyleClass().add("ShowStudentButton");
-        }
-        SetDepartmentTableViewProperties();
-        TableView_Department.refresh();
-
-
-        MainPaneHideOthersExceptThis(TableView_Department);
-
-
-    }
-
     EventHandler<ActionEvent> OnDepartmentClick = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent actionEvent) {
@@ -273,48 +343,96 @@ public class Controller {
         }
     };
 
+    @FXML
+    public void ShowDepartments(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
+        departments.clear();
+        departments =  Database.DatabaseConnection.GetAllDepartments();
+        SetStudentTableViewProperties();
+
+         for (Department department: departments) {
+            department.setButton(new Button("Show Student"));
+            department.getButton().setOnAction(OnDepartmentClick);
+            department.getButton().getStyleClass().add("ShowStudentButton");
+        }
+        SetDepartmentTableViewProperties();
+        TableView_Department.refresh();
+        MainPaneHideOthersExceptThis(TableView_Department);
+
+    }
+
     public void DepartmentTableChangeCommit(TableColumn.CellEditEvent event){
 
         var column = (TableColumn)event.getSource();
-        Student student = (Student)event.getRowValue();
+        Department department = (Department) event.getRowValue();
         var columnID = column.getId();
 
         if(columnID.endsWith("tName")){
-            student.setName((String) event.getNewValue());
+            department.setName((String) event.getNewValue());
         }
-        if(columnID.endsWith("tSurname")){
-            student.setSurname((String) event.getNewValue());
+        if(columnID.endsWith("tLanguage")){
+            department.setLanguage((String) event.getNewValue());
         }
-        if(columnID.endsWith("tEmail")){
-            student.setEmail((String) event.getNewValue());
+        if(columnID.endsWith("DepartmentChair")){
+            department.setDepartmentChair((String) event.getNewValue());
         }
-        if(columnID.endsWith("tPassword")){
-            student.setPassword((String) event.getNewValue());
+
+        if(columnID.endsWith("DepartmentFacultyID")){
+            department.setDepartmentFacultyID((String) event.getNewValue());
         }
 
         //CHECK IF CELLS ARE IN CORRECT FORMAT
-        if(student.getName() != "Giriniz" && student.getSurname() != "Giriniz"){
-            int id = Database.DatabaseConnection.AddStudent(student);
+        if(department.getName() != "Giriniz" && department.getLanguage() != "Giriniz" && department.getDepartmentChair() != "Giriniz" && department.getDepartmentFacultyID()!="Giriniz"){
+
+
+            if (HasSpecialCharacters("Name",department.getName())) return;
+            if (HasSpecialCharacters("Language",department.getLanguage())) return;
+
+
+            int id = Database.DatabaseConnection.AddDepartment(department);
             if(id != 0){
-                student.setID(id);
-                TableView_Student.refresh();
+                department.setID(id);
+                TableView_Department.refresh();
+            }
+            else{
+                Database.DatabaseConnection.AlterDepartment(department);
             }
 
         }
 
     }
 
+    public void DepartmentAdd(ActionEvent actionEvent) {
+        Department department = new Department();
+        departments.add(department);
+    }
 
+    public void DepartmentRemove(ActionEvent actionEvent) {
+        ObservableList<Department> selectedDepartments = TableView_Department.getSelectionModel().getSelectedItems();
+        ObservableList<Department> removedDepartments = FXCollections.observableArrayList();
+        for (Department department: selectedDepartments) {
+            if(Database.DatabaseConnection.RemoveDepartment(department)){
+                removedDepartments.add(department);
+            }
+        }
+        for (Department department: removedDepartments) {
+            departments.remove(department);
+        }
+    }
 
     private void SetDepartmentTableViewProperties(){
-
+       // TableColumn_DepartmentID.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_DepartmentName.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_DepartmentLanguage.setCellFactory(TextFieldTableCell.<String>forTableColumn());
-        TableColumn_DepartmentChair.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        TableColumn_DepartmentChair.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        TableColumn_DepartmentFacultyID.setCellFactory(TextFieldTableCell.<String>forTableColumn());
 
+
+
+        TableColumn_DepartmentID.setCellValueFactory(new PropertyValueFactory<Department, String>("ID"));
         TableColumn_DepartmentName.setCellValueFactory(new PropertyValueFactory<Department, String>("Name"));
         TableColumn_DepartmentLanguage.setCellValueFactory(new PropertyValueFactory<Department, String>("Language"));
-        TableColumn_DepartmentChair.setCellValueFactory(new PropertyValueFactory<Department, Integer>("DepartmentChair"));
+        TableColumn_DepartmentChair.setCellValueFactory(new PropertyValueFactory<Department, String>("DepartmentChair"));
+        TableColumn_DepartmentFacultyID.setCellValueFactory(new PropertyValueFactory<Department, String>("DepartmentFacultyID"));
         TableColumn_DepartmentStudent.setCellValueFactory(new PropertyValueFactory<Department, Button>("Button"));
 
         TableView_Department.setEditable(true);
@@ -325,7 +443,6 @@ public class Controller {
     /*##################### TEACHER TABLE #################################*/
     ObservableList<Teacher> teachers = FXCollections.observableArrayList();
     String teacherEmailExtension = "@izu.edu.tr";
-
 
     public void ShowAllTeacher(ActionEvent actionEvent) {
         teachers.clear();
@@ -341,7 +458,6 @@ public class Controller {
 
     }
 
-
     public void ShowTeachersDepartmentName(ActionEvent actionEvent) {
         var checkBox = (CheckBox) actionEvent.getSource();
         if(checkBox.isSelected()) {
@@ -356,7 +472,6 @@ public class Controller {
             isDepartmentColumnID = true;
         }
     }
-
 
     public void TeacherAdd(ActionEvent actionEvent){
         Teacher teacher = new Teacher();
@@ -504,11 +619,10 @@ public class Controller {
         selectedDepartmentID = ID;
     }
 
-
     public void ShowAllStudentCountByDepartment(){
         Label_Count.textProperty().setValue("Student Count: " + String.valueOf(Database.DatabaseConnection.GetStudentCountByDepartmentID(selectedDepartmentID)));
-    }
 
+    }
 
     public void MainPaneHideOthersExceptThis(Node control){
         for (Node childControl : AnchorPane_Main.getChildren()) {
@@ -562,6 +676,9 @@ public class Controller {
 
     }
 
+
+
+
     public static class ErrorAlert{
         Alert alert;
         ErrorAlert(String errorText){
@@ -575,7 +692,6 @@ public class Controller {
             alert.close();
         }
     }
-
 
     private boolean HasSpecialCharacters(String name, String text){
         Pattern pattern = Pattern.compile("[^a-zşöÖğĞüÜıİçÇ]", Pattern.CASE_INSENSITIVE);

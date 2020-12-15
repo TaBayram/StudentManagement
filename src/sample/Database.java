@@ -10,6 +10,97 @@ public class Database{
     public static class DatabaseConnection{
         private static String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
 
+        /*##################### FACULTY #################################*/
+
+        public static ObservableList<Faculty> GetAllFaculties(){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+
+                Statement statement = connection.createStatement();
+                String sqlScript = "SELECT * FROM FacultyTable";
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+                final ObservableList<Faculty> faculties = FXCollections.observableArrayList();
+
+                int i = 0;
+                while(true){
+                    boolean isNext =  resultSet.next();
+                    if(resultSet.isAfterLast() || !isNext) break;
+                    Faculty faculty = new Faculty();
+                    faculty.setID(resultSet.getInt("ID"));
+                    faculty.setName(resultSet.getString("Name"));
+                    faculty.setFacultyChair(String.valueOf(resultSet.getInt("FacultyChair")));
+
+
+                    faculties.add(faculty);
+                }
+                connection.close();
+                return faculties;
+
+            }catch(Exception e){
+                System.out.println("Connection Problem");
+            }
+            return null;
+        }
+
+        public static int AddFaculty(Faculty faculty){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+                Statement statement = connection.createStatement();
+                //INSERT VALUES
+                String sqlScript = String.format("spAddFaculty '%s', %d", faculty.getName(), Integer.parseInt(faculty.getFacultyChair()));
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+
+                int id = 0;
+                resultSet.next();
+                if(resultSet.isAfterLast()) return 0;
+                id = resultSet.getInt(1);
+
+                connection.close();
+                return id;
+            }catch(Exception e){
+                System.out.println("Connection Problem " + e.getMessage()+e.getMessage()+e.getClass());
+                return 0;
+            }
+        }
+
+        public static boolean AlterFaculty(Faculty faculty){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+
+                Statement statement = connection.createStatement();
+                //INSERT VALUES
+                String sqlScript = String.format("spAddFaculty '%s', %d", faculty.getName() ,Integer.parseInt(faculty.getFacultyChair()));
+                int result = statement.executeUpdate(sqlScript);
+                boolean updated = false;
+                if(result != 0) updated = true;
+                connection.close();
+                return updated;
+            }catch(Exception e){
+                System.out.println("Connection Problem " + e.getMessage());
+                return false;
+            }
+        }
+
+        public static boolean RemoveFaculty(Faculty faculty){
+            int id = faculty.getID();
+            try{
+                Connection connection = DriverManager.getConnection(url);
+
+                Statement statement = connection.createStatement();
+                //Delete
+                String sqlScript = String.format("Delete from FacultyTable Where ID = '%d'", id);
+                statement.executeUpdate(sqlScript);
+                connection.close();
+                return true;
+            }catch(Exception e){
+                System.out.println("Connection Problem " + e.getMessage());
+                return false;
+            }
+
+        }
+
+
+
         /*##################### STUDENT #################################*/
 
         public static ObservableList<Student> GetAllStudents(){
@@ -39,6 +130,7 @@ public class Database{
                     student.setAdvisorID(resultSet.getInt("AdvisorID"));
 
                     students.add(student);
+
                 }
                 connection.close();
                 return students;
@@ -116,7 +208,6 @@ public class Database{
         public static int AddStudent(Student student){
             try{
                 Connection connection = DriverManager.getConnection(url);
-
                 Statement statement = connection.createStatement();
                 //INSERT VALUES
                 String sqlScript = String.format("spAddStudent '%s', '%s','%s', '%s', %d", student.getName(),student.getSurname(),student.getPassword(),student.getEmail(), Integer.parseInt(student.getDepartmentID()));
@@ -132,9 +223,8 @@ public class Database{
                 System.out.println("Connection Problem " + e.getMessage());
                 return 0;
             }
-
-
         }
+
         public static boolean AlterStudent(Student student){
             try{
                 Connection connection = DriverManager.getConnection(url);
@@ -152,6 +242,7 @@ public class Database{
                 return false;
             }
         }
+
         public static boolean RemoveStudent(Student student){
             int id = student.getID();
             try{
@@ -189,14 +280,15 @@ public class Database{
                     department.setID(resultSet.getInt("ID"));
                     department.setName(resultSet.getString("Name"));
                     department.setLanguage(resultSet.getString("Language"));
-                    department.setDepartmentChair(resultSet.getInt("DepartmentChair"));
+                    department.setDepartmentChair(resultSet.getString("DepartmentChair"));
+                    department.setDepartmentFacultyID(resultSet.getString("FacultyID"));
                     departments.add(department);
                 }
                 connection.close();
                 return departments;
 
             }catch(Exception e){
-                System.out.println("Connection Problem");
+                System.out.println("Connection Problem"+ e.getMessage());
             }
             return null;
         }
@@ -225,6 +317,7 @@ public class Database{
             return null;
         }
 
+
         public static boolean DoesDepartmentExist(int ID){
             try{
                 Connection connection = DriverManager.getConnection(url);
@@ -243,6 +336,64 @@ public class Database{
             }
             return false;
         }
+
+        public static int AddDepartment(Department department){
+                try{
+                Connection connection = DriverManager.getConnection(url);
+                Statement statement = connection.createStatement();
+                //INSERT VALUES
+                String sqlScript = String.format("spAddDepartment '%s', '%s', %d, %d", department.getName(),department.getLanguage(),Integer.parseInt(department.getDepartmentChair()),Integer.parseInt(department.getDepartmentFacultyID()));
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+
+                int id = 0;
+                resultSet.next();
+                if(resultSet.isAfterLast()) return 0;
+                id = resultSet.getInt(1);
+
+                connection.close();
+                return id;
+            }catch(Exception e){
+                System.out.println("Connection Problem " + e.getMessage()+e.getMessage()+e.getClass());
+                return 0;
+            }
+        }
+
+        public static boolean AlterDepartment(Department department){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+
+                Statement statement = connection.createStatement();
+                //INSERT VALUES
+                String sqlScript = String.format("spAddDepartment '%s', '%s', '%d', %d", department.getName(),department.getLanguage(),Integer.parseInt(department.getDepartmentChair()),Integer.parseInt(department.getDepartmentFacultyID()));
+                int result = statement.executeUpdate(sqlScript);
+                boolean updated = false;
+                if(result != 0) updated = true;
+                connection.close();
+                return updated;
+            }catch(Exception e){
+                System.out.println("Connection Problema " + e.getMessage());
+                return false;
+            }
+        }
+
+        public static boolean RemoveDepartment(Department department){
+            int id = department.getID();
+            try{
+                Connection connection = DriverManager.getConnection(url);
+
+                Statement statement = connection.createStatement();
+                //Delete
+                String sqlScript = String.format("Delete from DepartmentTable Where ID = '%d'", id);
+                statement.executeUpdate(sqlScript);
+                connection.close();
+                return true;
+            }catch(Exception e){
+                System.out.println("Connection Problem " + e.getMessage());
+                return false;
+            }
+
+        }
+
 
 
         /*##################### TEACHER #################################*/
@@ -352,6 +503,7 @@ public class Database{
                 return false;
             }
         }
+
         public static boolean RemoveTeacher(Teacher teacher){
             int id = teacher.getID();
             try{
@@ -405,8 +557,6 @@ public class Database{
             }
             return null;
         }
-
-
 
         public static int GetStudentCountByDepartmentID(int ID){
             try{
