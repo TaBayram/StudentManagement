@@ -277,7 +277,7 @@ public class Database{
                 Connection connection = DriverManager.getConnection(url);
                 Statement statement = connection.createStatement();
                 //INSERT VALUES
-                String sqlScript = String.format("spAddStudent '%s', '%s','%s', '%s', %d", student.getName(),student.getSurname(),student.getPassword(),student.getEmail(), Integer.parseInt(student.getDepartmentID()));
+                String sqlScript = String.format("spAddStudent '%s', '%s','%s', '%s', %d,%d", student.getName(),student.getSurname(),student.getPassword(),student.getEmail(), Integer.parseInt(student.getDepartmentID()),student.getAdvisorID());
                 ResultSet resultSet = statement.executeQuery(sqlScript);
                 int id = 0;
                 resultSet.next();
