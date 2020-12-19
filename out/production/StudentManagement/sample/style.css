@@ -30,3 +30,22 @@
 .regularbutton:hover{
     -fx-background-color: #beb3ff;
 }
+
+
+.mainbutton{
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-background-color: #dac9f2;
+    -fx-border: none;
+    -fx-border-radius: 10px;
+}
+
+.mainbutton:hover{
+    -fx-background-color: #beb3ff;
+}
+
+.mainbutton:pressed{
+    -fx-background-color: #664ff0;
+}
+
+

@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="1200.0" prefHeight="850.0" prefWidth="1400.0" style="-fx-background-color: #21015C;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="1200.0" prefHeight="850.0" prefWidth="1400.0" style="-fx-background-color: #21015C;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <HBox prefHeight="100.0" prefWidth="1259.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -24,11 +19,87 @@
                               <Insets top="25.0" />
                            </padding>
                            <children>
-                              <Button alignment="CENTER" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowDepartments" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="Departments" textAlignment="CENTER" />
-                              <Button fx:id="Button_Faculty" layoutX="125.0" layoutY="145.0" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowFaculty" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="Faculty" />
-                              <Button fx:id="Button_AllStudent" alignment="CENTER" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowAllStudent" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="All Students" />
-                              <Button fx:id="Button_Teacher" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowAllTeacher" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="All Teachers" />
-                              <Button fx:id="Button_Person" layoutX="123.0" layoutY="145.0" minHeight="28.0" minWidth="100.0" mnemonicParsing="false" onAction="#ShowAllPeople" prefHeight="30.0" prefWidth="120.0" styleClass="regularbutton" text="People" />
+                              <Button graphicTextGap="17.0" minHeight="56.0" minWidth="200.0" mnemonicParsing="false" onAction="#ShowDepartments" prefHeight="60.0" prefWidth="240.0" styleClass="mainbutton" text="Departments" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="MS Outlook" size="20.0" />
+                                 </font>
+                                 <graphic>
+                                    <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -10px;">
+                                       <image>
+                                          <Image url="@Assets/department.png" />
+                                       </image>
+                                       <viewport>
+                                          <Rectangle2D height="64.0" width="64.0" />
+                                       </viewport>
+                                    </ImageView>
+                                 </graphic></Button>
+                              <Button fx:id="Button_Faculty" graphicTextGap="17.0" layoutX="125.0" layoutY="145.0" minHeight="56.0" minWidth="200.0" mnemonicParsing="false" onAction="#ShowFaculty" prefHeight="60.0" prefWidth="240.0" styleClass="mainbutton" text="Faculty">
+                                 <font>
+                                    <Font name="MS Outlook" size="20.0" />
+                                 </font>
+                                 <graphic>
+                                    <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -30px;">
+                                       <image>
+                                          <Image url="@Assets/university-building.png" />
+                                       </image>
+                                       <viewport>
+                                          <Rectangle2D height="64.0" width="64.0" />
+                                       </viewport>
+                                    </ImageView>
+                                 </graphic></Button>
+                              <Button fx:id="Button_AllStudent" graphicTextGap="17.0" minHeight="56.0" minWidth="200.0" mnemonicParsing="false" onAction="#ShowAllStudent" prefHeight="60.0" prefWidth="240.0" styleClass="mainbutton" text="All Students">
+                                 <font>
+                                    <Font name="MS Outlook" size="20.0" />
+                                 </font>
+                                 <graphic>
+                                    <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -10px;">
+                                       <image>
+                                          <Image url="@Assets/graduated.png" />
+                                       </image>
+                                       <viewport>
+                                          <Rectangle2D height="64.0" width="64.0" />
+                                       </viewport>
+                                    </ImageView>
+                                 </graphic></Button>
+                              <Button fx:id="Button_Teacher" graphicTextGap="17.0" minHeight="56.0" minWidth="200.0" mnemonicParsing="false" onAction="#ShowAllTeacher" prefHeight="60.0" prefWidth="240.0" styleClass="mainbutton" text="All Teachers">
+                                 <font>
+                                    <Font name="MS Outlook" size="20.0" />
+                                 </font>
+                                 <graphic>
+                                    <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -10px;">
+                                       <image>
+                                          <Image url="@Assets/teacher.png" />
+                                       </image>
+                                       <viewport>
+                                          <Rectangle2D height="64.0" width="64.0" />
+                                       </viewport>
+                                    </ImageView>
+                                 </graphic></Button>
+                              <Button fx:id="Button_Person" graphicTextGap="17.0" layoutX="123.0" layoutY="145.0" minHeight="56.0" minWidth="200.0" mnemonicParsing="false" onAction="#ShowAllPeople" prefHeight="60.0" prefWidth="240.0" styleClass="mainbutton" text="People">
+                                 <font>
+                                    <Font name="MS Outlook" size="20.0" />
+                                 </font>
+                                 <graphic>
+                                    <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -30px;">
+                                       <image>
+                                          <Image url="@Assets/group.png" />
+                                       </image>
+                                       <viewport>
+                                          <Rectangle2D height="64.0" width="64.0" />
+                                       </viewport>
+                                    </ImageView>
+                                 </graphic></Button>
+                              <TitledPane animated="false" minHeight="75.0" minWidth="150.0" prefHeight="75.0" prefWidth="200.0" text="Matematik" textAlignment="CENTER">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="50.0" prefWidth="350.0">
+                                       <children>
+                                          <ComboBox fx:id="ComboBox_Math" layoutX="130.0" layoutY="14.0" prefHeight="28.0" prefWidth="88.0" promptText="Operation" styleClass="regularbutton" />
+                                          <TextField fx:id="TextField_MathInput" layoutX="14.0" layoutY="15.0" onKeyPressed="#DoMath" prefHeight="26.0" prefWidth="100.0" />
+                                          <TextField fx:id="TextField_Output" editable="false" layoutX="235.0" layoutY="15.0" prefHeight="26.0" prefWidth="100.0" />
+                                       </children>
+                                    </AnchorPane>
+                                </content>
+                              </TitledPane>
                            </children>
                         </VBox>
                      </children>
@@ -39,7 +110,7 @@
                <children>
                   <VBox minHeight="100.0" prefHeight="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                      <children>
-                        <AnchorPane maxHeight="50.0" prefHeight="50.0" prefWidth="200.0">
+                        <AnchorPane fx:id="Pane_Information" disable="true" maxHeight="50.0" prefHeight="50.0" prefWidth="200.0">
                            <children>
                               <Label fx:id="Label_Count" layoutX="892.0" layoutY="11.0" prefHeight="17.0" prefWidth="128.0" textFill="WHITE" />
                            </children>
@@ -59,6 +130,7 @@
                               </HBox>
                               <HBox fx:id="HBox_Teacher" alignment="CENTER_RIGHT" disable="true" opacity="0.0" prefHeight="75.0" prefWidth="1050.0" spacing="25.0">
                                  <children>
+                                    <CheckBox fx:id="CheckBox_TeacherPasswordHıde" mnemonicParsing="false" onAction="#PasswordColumnCheckBox" selected="true" text="Şifrele" textFill="WHITE" />
                                     <CheckBox fx:id="CheckBox_TeacherDepartmentName" mnemonicParsing="false" onAction="#ShowTeachersDepartmentName" text="Bölüm Adı" textFill="WHITE" />
                                     <Button fx:id="Button_TeacherDelete" mnemonicParsing="false" onAction="#TeacherRemove" styleClass="regularbutton" text="Öğretmen Sil" />
                                     <Button mnemonicParsing="false" styleClass="regularbutton" text="Öğretmen Güncelle" />
@@ -79,9 +151,9 @@
                                     <Insets left="50.0" right="50.0" />
                                  </padding>
                               </HBox>
-                              <HBox fx:id="HBox_Faculty" alignment="CENTER_RIGHT" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="75.0" prefWidth="1050.0" spacing="25.0">
+                              <HBox fx:id="HBox_Faculty" alignment="CENTER_RIGHT" disable="true" opacity="0.0" prefHeight="75.0" prefWidth="1050.0" spacing="25.0">
                                  <children>
-                                    <CheckBox fx:id="CheckBox_StudentDepartmentName11" mnemonicParsing="false" onAction="#ShowStudentsDepartmentName" text="Başkan Adı" textFill="WHITE" />
+                                    <CheckBox fx:id="CheckBox_StudentDepartmentName11" mnemonicParsing="false" onAction="#ShowFacultyChairName" text="Başkan Adı" textFill="WHITE" />
                                     <Button fx:id="Button_FacultyDelete" mnemonicParsing="false" onAction="#FacultyRemove" styleClass="regularbutton" text="Fackülte Sil" />
                                     <Button mnemonicParsing="false" styleClass="regularbutton" text="Fakülte Güncelle" />
                                     <Button fx:id="Button_FacultyAdd" mnemonicParsing="false" onAction="#FacultyAdd" styleClass="regularbutton" text="Fakülte Ekle" />
@@ -147,6 +219,7 @@
                               <TableColumn fx:id="TableColumn_FacultyID" maxWidth="100.0" minWidth="50.0" onEditCommit="#FacultyTableChangeCommit" prefWidth="75.0" text="Fakülte ID" />
                               <TableColumn fx:id="TableColumn_FacultyName" maxWidth="226.0" minWidth="50.0" onEditCommit="#FacultyTableChangeCommit" prefWidth="226.0" text="Fakülte İsmi" />
                               <TableColumn fx:id="TableColumn_FacultyChair" maxWidth="200.0" minWidth="0.0" onEditCommit="#FacultyTableChangeCommit" prefWidth="120.0" text="Fakülte Başkanı" />
+                              <TableColumn fx:id="TableColumn_FacultyCourseCount" maxWidth="200.0" minWidth="0.0" prefWidth="120.0" text="Fakülte Ders Sayısı" />
                            </columns>
                         </TableView>
                      </children>

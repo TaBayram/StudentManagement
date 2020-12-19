@@ -28,7 +28,27 @@ public class Faculty {
     int ID;
     String Name;
     String FacultyChair;
+
+    public String getFacultyChairName() {
+        return FacultyChairName;
+    }
+
+    public void setFacultyChairName(String facultyChairName) {
+        FacultyChairName = facultyChairName;
+    }
+
+    String FacultyChairName;
     String enter = "Giriniz";
+
+    public int getFacultyCourseCount() {
+        return FacultyCourseCount;
+    }
+
+    public void setFacultyCourseCount(int facultyCourseCount) {
+        FacultyCourseCount = facultyCourseCount;
+    }
+
+    int FacultyCourseCount;
 
     public Faculty() {
         this.ID = ID;

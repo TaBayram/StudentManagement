@@ -9,6 +9,9 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -75,7 +78,6 @@ public class Controller {
     public TableColumn TableColumn_StudentAdvisorID;
     public AnchorPane AnchorPane_Main;
 
-
     public TableView TableView_Person;
     public TableColumn TableColumn_PersonID;
     public TableColumn TableColumn_PersonName;
@@ -87,6 +89,30 @@ public class Controller {
     public Button Button_Faculty;
     public Button Button_AllStudent;
     public Button Button_Person;
+    public AnchorPane Pane_Information;
+    public ComboBox ComboBox_Math;
+    public TextField TextField_MathInput;
+    public TextField TextField_Output;
+    public TableColumn TableColumn_FacultyCourseCount;
+
+
+    public void initialize(){
+        ObservableList<String> options =
+                FXCollections.observableArrayList(
+                        "Kare",
+                        "Küp",
+                        "Karekök",
+                        "Tanjant",
+                        "Sinüs",
+                        "Cosinüs",
+                        "Alt Yuvarla",
+                        "Üst Yuvarla",
+                        "Mutlak"
+                );
+        ComboBox_Math.setItems(options);
+
+    }
+
 
 
     /*_______________________________________________________________________*/
@@ -110,7 +136,7 @@ public class Controller {
         if(columnID.endsWith("yName")){
             faculty.setName((String) event.getNewValue());
         }
-        if(columnID.endsWith("yFacultyChair")){
+        if(columnID.endsWith("FacultyChair")){
             faculty.setFacultyChair((String) event.getNewValue());
         }
 
@@ -120,13 +146,14 @@ public class Controller {
 
 
             if (HasSpecialCharacters("Name",faculty.getName())) return;
-            if (HasSpecialCharacters("FacultyChair",faculty.getFacultyChair())) return;
+            if (!HasOnlyNumbers("Faculty Chair",faculty.getFacultyChair())) return;
 
-
-            int id = Database.DatabaseConnection.AddFaculty(faculty);
-            if(id != 0){
-                faculty.setID(id);
-                TableView_Faculty.refresh();
+            if(faculty.getID() == 0) {
+                int id = Database.DatabaseConnection.AddFaculty(faculty);
+                if (id != 0) {
+                    faculty.setID(id);
+                    TableView_Faculty.refresh();
+                }
             }
             else{
                 Database.DatabaseConnection.AlterFaculty(faculty);
@@ -136,18 +163,19 @@ public class Controller {
 
     }
 
-    private void SetFacultyTableViewProperties(){
-
-        TableColumn_FacultyName.setCellFactory(TextFieldTableCell.<String>forTableColumn());
-        TableColumn_FacultyChair.setCellFactory(TextFieldTableCell.<String>forTableColumn());
-
-        TableColumn_FacultyID.setCellValueFactory(new PropertyValueFactory<Faculty, Integer>("ID"));
-        TableColumn_FacultyName.setCellValueFactory(new PropertyValueFactory<Faculty, String>("Name"));
-        TableColumn_FacultyChair.setCellValueFactory(new PropertyValueFactory<Faculty, String>("FacultyChair"));
-
-        TableView_Faculty.setEditable(true);
-        TableView_Faculty.setItems(faculties);
-        TableView_Faculty.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    public void ShowFacultyChairName(ActionEvent actionEvent) {
+        var checkBox = (CheckBox) actionEvent.getSource();
+        if(checkBox.isSelected()) {
+            Database.DatabaseConnection.GetFacultyChairNames(faculties);
+            TableColumn_FacultyChair.setEditable(false);
+            TableColumn_FacultyChair.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+            TableColumn_FacultyChair.setCellValueFactory(new PropertyValueFactory<Faculty, String>("FacultyChairName"));
+        }
+        else{
+            TableColumn_FacultyChair.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+            TableColumn_FacultyChair.setEditable(true);
+            TableColumn_FacultyChair.setCellValueFactory(new PropertyValueFactory<Faculty, String>("FacultyChair"));
+        }
     }
 
     public void FacultyAdd(ActionEvent actionEvent) {
@@ -168,7 +196,20 @@ public class Controller {
         }
     }
 
+    private void SetFacultyTableViewProperties(){
 
+        TableColumn_FacultyName.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        TableColumn_FacultyChair.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+
+        TableColumn_FacultyID.setCellValueFactory(new PropertyValueFactory<Faculty, Integer>("ID"));
+        TableColumn_FacultyName.setCellValueFactory(new PropertyValueFactory<Faculty, String>("Name"));
+        TableColumn_FacultyChair.setCellValueFactory(new PropertyValueFactory<Faculty, String>("FacultyChair"));
+        TableColumn_FacultyCourseCount.setCellValueFactory(new PropertyValueFactory<Faculty, Integer>("FacultyCourseCount"));
+
+        TableView_Faculty.setEditable(true);
+        TableView_Faculty.setItems(faculties);
+        TableView_Faculty.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    }
 
     /*##################### STUDENT TABLE #################################*/
     ObservableList<Student> students = FXCollections.observableArrayList();
@@ -198,13 +239,15 @@ public class Controller {
         TableView_Student.refresh();
 
 
-        ShowAllStudentCountByDepartment();
+
 
         TableColumn_StudentDepartment.setVisible(false);
 
 
 
         MainPaneHideOthersExceptThis(TableView_Student);
+
+        ShowAllStudentCountByDepartment();
 
     }
 
@@ -253,6 +296,9 @@ public class Controller {
             if(isDepartmentColumnID) student.setDepartmentID((String) event.getNewValue());
             else student.setDepartmentName((String) event.getNewValue());
         }
+        if(columnID.endsWith("tAdvisorID")){
+            student.setAdvisorID((int)event.getNewValue());
+        }
 
         //CHECK IF CELLS ARE IN CORRECT FORMAT
         if(student.getName() != "Giriniz" && student.getSurname() != "Giriniz" && student.getDepartmentID() != "0" && student.getPassword() != "Giriniz"){
@@ -265,6 +311,11 @@ public class Controller {
             //CHECK THE DEPARTMENT IF EXIST
             if( !Database.DatabaseConnection.DoesDepartmentExist(Integer.parseInt(student.getDepartmentID()) )){
                 ErrorAlert errorAlert = new ErrorAlert("Department does not exist");
+                return;
+            }
+
+            if( !Database.DatabaseConnection.DoesTeacherExist(student.getAdvisorID())){
+                ErrorAlert errorAlert = new ErrorAlert("Teacher does not exist");
                 return;
             }
 
@@ -288,11 +339,13 @@ public class Controller {
         var checkBox = (CheckBox) actionEvent.getSource();
         if(checkBox.isSelected()) {
             Database.DatabaseConnection.GetStudentDepartmentName(students);
+            TableColumn_StudentDepartment.setEditable(false);
             TableColumn_StudentDepartment.setCellFactory(TextFieldTableCell.<String>forTableColumn());
             TableColumn_StudentDepartment.setCellValueFactory(new PropertyValueFactory<Student, String>("DepartmentName"));
             isDepartmentColumnID = false;
         }
         else{
+            TableColumn_StudentDepartment.setEditable(true);
             TableColumn_StudentDepartment.setCellFactory(TextFieldTableCell.<String>forTableColumn());
             TableColumn_StudentDepartment.setCellValueFactory(new PropertyValueFactory<Student, String>("DepartmentID"));
             isDepartmentColumnID = true;
@@ -308,7 +361,7 @@ public class Controller {
         TableColumn_StudentPassword.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_StudentDepartment.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         //TableColumn_StudentRegisteredDate.setCellFactory(TextFieldTableCell.forTableColumn(new DateTimeStringConverter()));
-        TableColumn_StudentSemester.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        //TableColumn_StudentSemester.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         TableColumn_StudentAdvisorID.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
         //TableColumn_StudentDepartment.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
@@ -386,16 +439,22 @@ public class Controller {
 
             if (HasSpecialCharacters("Name",department.getName())) return;
             if (HasSpecialCharacters("Language",department.getLanguage())) return;
-
-
-            int id = Database.DatabaseConnection.AddDepartment(department);
-            if(id != 0){
-                department.setID(id);
-                TableView_Department.refresh();
+            if (Database.DatabaseConnection.DoesFacultyExist(Integer.parseInt(department.getDepartmentFacultyID()))){
+                ErrorAlert errorAlert = new ErrorAlert("Faculty does not exist");
+                return;
             }
-            else{
-                Database.DatabaseConnection.AlterDepartment(department);
+
+            if(department.getID() == 0) {
+                int id = Database.DatabaseConnection.AddDepartment(department);
+                if (id != 0) {
+                    department.setID(id);
+                    TableView_Department.refresh();
+                }
             }
+            else {
+                    Database.DatabaseConnection.AlterDepartment(department);
+                }
+
 
         }
 
@@ -462,11 +521,13 @@ public class Controller {
         var checkBox = (CheckBox) actionEvent.getSource();
         if(checkBox.isSelected()) {
             Database.DatabaseConnection.GetTeacherDepartmentName(teachers);
+            TableColumn_TeacherDepartment.setEditable(false);
             TableColumn_TeacherDepartment.setCellFactory(TextFieldTableCell.<String>forTableColumn());
             TableColumn_TeacherDepartment.setCellValueFactory(new PropertyValueFactory<Teacher, String>("DepartmentName"));
             isDepartmentColumnID = false;
         }
         else{
+            TableColumn_TeacherDepartment.setEditable(true);
             TableColumn_TeacherDepartment.setCellFactory(TextFieldTableCell.<String>forTableColumn());
             TableColumn_TeacherDepartment.setCellValueFactory(new PropertyValueFactory<Teacher, String>("DepartmentID"));
             isDepartmentColumnID = true;
@@ -573,7 +634,7 @@ public class Controller {
         TableColumn_TeacherSurname.setCellValueFactory(new PropertyValueFactory<Teacher, String>("Surname"));
         TableColumn_TeacherEmail.setCellValueFactory(new PropertyValueFactory<Teacher, String>("Email"));
         TableColumn_TeacherRegisteredDate.setCellValueFactory(new PropertyValueFactory<Teacher, DateTimeStringConverter>("RegisteredDate"));
-        TableColumn_TeacherPassword.setCellValueFactory(new PropertyValueFactory<Teacher, String>("Password"));
+        TableColumn_TeacherPassword.setCellValueFactory(new PropertyValueFactory<Teacher, String>("HiddenPassword"));
         TableColumn_TeacherDepartment.setCellValueFactory(new PropertyValueFactory<Teacher, String>("DepartmentID"));
         TableColumn_TeacherTitle.setCellValueFactory(new PropertyValueFactory<Teacher, String>("Title"));
 
@@ -641,10 +702,12 @@ public class Controller {
                 if(!control.isDisable()){
                     control.setOpacity(0);
                     control.setDisable(true);
+                    InfoPaneVisible(false);
                 }
                 else{
                     control.setOpacity(1);
                     control.setDisable(false);
+                    InfoPaneVisible(true);
                 }
             }
             else{
@@ -661,6 +724,7 @@ public class Controller {
                 if(control.isDisable() == false){
                     control.setOpacity(0);
                     control.setDisable(true);
+
                 }
                 else{
                     control.setOpacity(1);
@@ -676,8 +740,72 @@ public class Controller {
 
     }
 
+    private void InfoPaneVisible(boolean wantItShown){
+        if(!wantItShown){
+            Pane_Information.setOpacity(0);
+            Pane_Information.setDisable(true);
+        }
+        else{
+            Pane_Information.setOpacity(1);
+            Pane_Information.setDisable(false);
+        }
+    }
+
+    public void DoMath(KeyEvent keyEvent) {
+        if(keyEvent.getCode().equals(KeyCode.ENTER)){
+            String input = TextField_MathInput.getCharacters().toString();
+            Pattern pattern = Pattern.compile("[^0-9.-]", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(input);
+            boolean hasOnlyNumbers = matcher.find();
+            if(input.contains("-") && input.indexOf('-') != 0) {
+                ErrorAlert errorAlert = new ErrorAlert("Error: Please put the minus sign in front of the number!");
+                return;
+            }
+            else if(input.indexOf(".") != input.lastIndexOf(".")) {
+                ErrorAlert errorAlert = new ErrorAlert("Error: Please remove decimal point until one is left!");
+                return;
+            }
+            if(!hasOnlyNumbers && !input.contains(",") && !ComboBox_Math.getSelectionModel().isEmpty()){
+                var number = Double.parseDouble(input);
+                int operation = 0;
+                if(ComboBox_Math.getValue().toString().equals("Kare")) operation = 1;
+                if(ComboBox_Math.getValue().toString().equals("Küp")) operation = 2;
+                if(ComboBox_Math.getValue().toString().equals("Karekök")) operation = 3;
+                if(ComboBox_Math.getValue().toString().equals("Tanjant")) operation = 4;
+                if(ComboBox_Math.getValue().toString().equals("Sinüs")) operation = 5;
+                if(ComboBox_Math.getValue().toString().equals("Cosinüs")) operation = 6;
+                if(ComboBox_Math.getValue().toString().equals("Alt Yuvarla")) operation = 7;
+                if(ComboBox_Math.getValue().toString().equals("Üst Yuvarla")) operation = 8;
+                if(ComboBox_Math.getValue().toString().equals("Mutlak")) operation = 9;
+
+                if(operation == 3 && input.contains("-")) {
+                    ErrorAlert errorAlert = new ErrorAlert("Error: You can't take a negative number's square root!");
+                    return;
+                }
+
+                TextField_Output.setText("" + Database.DatabaseConnection.GetMathResult(number,operation));
+            }
+            else{
+                ErrorAlert errorAlert = new ErrorAlert("Error: Please enter the number correctly ( use . for decimal ) or choose the operation!");
+            }
+
+        }
+    }
+
+    public void PasswordColumnCheckBox(ActionEvent actionEvent) {
+        var checkBox = (CheckBox) actionEvent.getSource();
+        if(checkBox.isSelected()) {
+            TableColumn_TeacherPassword.setEditable(false);
+            TableColumn_TeacherPassword.setCellValueFactory(new PropertyValueFactory<Teacher, String>("HiddenPassword"));
+        }
+        else{
+            TableColumn_TeacherPassword.setEditable(true);
+            TableColumn_TeacherPassword.setCellValueFactory(new PropertyValueFactory<Teacher, String>("Password"));
+        }
+        TableView_Teacher.refresh();
 
 
+    }
 
     public static class ErrorAlert{
         Alert alert;
@@ -722,15 +850,15 @@ public class Controller {
         }
     }
 
-    private boolean HasTeacherCorrectEmailFormat(Teacher student, boolean change){
-        String email = student.getSurname().toLowerCase()+"." + student.getName().toLowerCase() + teacherEmailExtension;
-        if(student.getEmail().equals(email)){
+    private boolean HasTeacherCorrectEmailFormat(Teacher teacher, boolean change){
+        String email = teacher.getName().toLowerCase() + "." + teacher.getSurname().toLowerCase()+ teacherEmailExtension;
+        if(teacher.getEmail().equals(email)){
             return true;
         }
         else{
             if(change){
-                student.setEmail(email);
-                TableView_Student.refresh();
+                teacher.setEmail(email);
+                TableView_Teacher.refresh();
                 return true;
             }
             else {
@@ -759,7 +887,20 @@ public class Controller {
         return true;
     }
 
+    private boolean HasOnlyNumbers(String name, String text){
+        Pattern pattern = Pattern.compile("[^0-9]", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(text);
+        boolean hasNonNumericChar = matcher.find();
+
+        if(hasNonNumericChar){
+            ErrorAlert errorAlert = new ErrorAlert(name + " Must Contain Only Numbers");
+        }
+
+        return !hasNonNumericChar;
+    }
+
 }
+
 
 
 

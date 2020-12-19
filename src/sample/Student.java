@@ -110,6 +110,7 @@ public class Student {
         Password = enter;
         Email = enter;
         DepartmentID = enter;
+        AdvisorID = 0;
     }
 
     String DepartmentID;

@@ -69,15 +69,23 @@ public class Teacher {
     public void setRegisteredDate(Date registeredDate) {
         RegisteredDate = registeredDate;
     }
+
+
+    public String getHiddenPassword() {
+        return HiddenPassword;
+    }
+
+    public void setHiddenPassword(String hiddenPassword) {
+        HiddenPassword = hiddenPassword;
+    }
+
     int ID;
-
-
-
     String Name;
     String Surname;
     String Email;
     String Title;
     String Password;
+    String HiddenPassword;
     String DepartmentID;
     Date RegisteredDate;
     String DepartmentName;

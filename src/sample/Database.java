@@ -33,6 +33,23 @@ public class Database{
 
                     faculties.add(faculty);
                 }
+
+                statement = connection.createStatement();
+                sqlScript = "SELECT FacultyID,SUM(CourseCount) as 'Course Count' From DepartmentTable Group By FacultyID";
+                resultSet = statement.executeQuery(sqlScript);
+
+                while(true){
+                    boolean isNext =  resultSet.next();
+                    if(resultSet.isAfterLast() || !isNext) break;
+                    for (Faculty faculty:faculties) {
+                        if(faculty.getID() == resultSet.getInt("FacultyID")){
+                            faculty.setFacultyCourseCount(resultSet.getInt("Course Count"));
+                        }
+                    }
+
+
+                }
+
                 connection.close();
                 return faculties;
 
@@ -41,6 +58,37 @@ public class Database{
             }
             return null;
         }
+
+        public static boolean GetFacultyChairNames(ObservableList<Faculty> faculties){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+                Statement statement = connection.createStatement();
+                String sqlScript = "Select FacultyTable.ID,TeacherTable.Name from FacultyTable " +
+                        "LEFT JOIN TeacherTable " +
+                        "ON FacultyTable.FacultyChair = TeacherTable.ID";
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+
+                int i = 0;
+                while(true){
+                    resultSet.next();
+                    if(resultSet.isAfterLast()) break;
+                    int id = resultSet.getInt("ID");
+                    for (Faculty faculty: faculties) {
+                        if(faculty.getID() == id){
+                            faculty.setFacultyChairName(resultSet.getString(("Name")));
+                            break;
+                        }
+                    }
+                }
+                connection.close();
+                return true;
+            }catch(Exception e){
+                System.out.println("Connection Error: " + e.getMessage());
+
+            }
+            return false;
+        }
+
 
         public static int AddFaculty(Faculty faculty){
             try{
@@ -69,7 +117,7 @@ public class Database{
 
                 Statement statement = connection.createStatement();
                 //INSERT VALUES
-                String sqlScript = String.format("spAddFaculty '%s', %d", faculty.getName() ,Integer.parseInt(faculty.getFacultyChair()));
+                String sqlScript = String.format("spUpdateFaculty %d,'%s', %d", faculty.getID(),faculty.getName() ,Integer.parseInt(faculty.getFacultyChair()));
                 int result = statement.executeUpdate(sqlScript);
                 boolean updated = false;
                 if(result != 0) updated = true;
@@ -99,7 +147,24 @@ public class Database{
 
         }
 
+        public static boolean DoesFacultyExist(int ID){
+            try{
+                Connection connection = DriverManager.getConnection(url);
 
+                Statement statement = connection.createStatement();
+                String sqlScript = String.format("SELECT COUNT(ID) COUNT FROM FacultyTable WHERE ID = %d",ID);                                                      //SELECT FROM
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+                boolean exists = true;
+                resultSet.next();
+                if(resultSet.getInt("COUNT") == 0) exists = false;
+                connection.close();
+                return exists;
+
+            }catch(Exception e){
+                System.out.println("Connection Problem " +e.getClass() +  e.getMessage());
+            }
+            return false;
+        }
 
         /*##################### STUDENT #################################*/
 
@@ -109,7 +174,9 @@ public class Database{
                 Statement statement = connection.createStatement();
                 //CallableStatement stmt = connection.prepareCall("{}")
 
-                String sqlScript = "{call spAllStudent()}";                                                             //PROCEDURE
+                String sqlScript = "Update StudentTable Set Semester = dbo.Semester(RegisteredDate)";
+                statement.execute(sqlScript);
+                sqlScript = "{call spAllStudent()}";
                 ResultSet resultSet = statement.executeQuery(sqlScript);
                 final ObservableList<Student> students = FXCollections.observableArrayList();
 
@@ -149,7 +216,6 @@ public class Database{
                         "LEFT JOIN DepartmentTable " +
                         "ON StudentTable.DepartmentId = DepartmentTable.ID";                                                             //PROCEDURE
                 ResultSet resultSet = statement.executeQuery(sqlScript);
-                final ObservableList<Student> studentsDepartmentNames = FXCollections.observableArrayList();
 
                 int i = 0;
                 while(true){
@@ -364,7 +430,7 @@ public class Database{
 
                 Statement statement = connection.createStatement();
                 //INSERT VALUES
-                String sqlScript = String.format("spAddDepartment '%s', '%s', '%d', %d", department.getName(),department.getLanguage(),Integer.parseInt(department.getDepartmentChair()),Integer.parseInt(department.getDepartmentFacultyID()));
+                String sqlScript = String.format("spUpdateDepartment '%d', '%s', '%s', '%d', %d", department.getID(),department.getName(),department.getLanguage(),Integer.parseInt(department.getDepartmentChair()),Integer.parseInt(department.getDepartmentFacultyID()));
                 int result = statement.executeUpdate(sqlScript);
                 boolean updated = false;
                 if(result != 0) updated = true;
@@ -404,7 +470,7 @@ public class Database{
                 Statement statement = connection.createStatement();
                 //CallableStatement stmt = connection.prepareCall("{}")
 
-                String sqlScript = "SELECT * FROM TeacherTable";                                                             //PROCEDURE
+                String sqlScript = "Select *, REPLACE(Password, Password, '****') as HiddenPassword From TeacherTable";
                 ResultSet resultSet = statement.executeQuery(sqlScript);
                 final ObservableList<Teacher> teachers = FXCollections.observableArrayList();
 
@@ -419,6 +485,7 @@ public class Database{
                     teacher.setEmail(resultSet.getString("Email"));
                     teacher.setTitle(resultSet.getString("Title"));
                     teacher.setPassword(resultSet.getString("Password"));
+                    teacher.setHiddenPassword(resultSet.getString("HiddenPassword"));
                     teacher.setDepartmentID(String.valueOf(resultSet.getInt("DepartmentID")));
                     teacher.setRegisteredDate(resultSet.getDate("RegisteredDate"));
 
@@ -522,6 +589,25 @@ public class Database{
 
         }
 
+        public static boolean DoesTeacherExist(int ID){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+
+                Statement statement = connection.createStatement();
+                String sqlScript = String.format("SELECT COUNT(ID) COUNT FROM TeacherTable WHERE ID = %d",ID);                                                      //SELECT FROM
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+                boolean exists = true;
+                resultSet.next();
+                if(resultSet.getInt("COUNT") == 0) exists = false;
+                connection.close();
+                return exists;
+
+            }catch(Exception e){
+                System.out.println("Connection Problem " +e.getClass() +  e.getMessage());
+            }
+            return false;
+        }
+
         /*##################### MISC #################################*/
 
         public static ObservableList<Person> GetAllPeople(){
@@ -563,10 +649,25 @@ public class Database{
                 Connection connection = DriverManager.getConnection(url);
                 Statement statement = connection.createStatement();
 
-                String sqlScript = String.format("SELECT COUNT(ID) as [Count] FROM StudentTable Where DepartmentID = %d",ID);
-                ResultSet resultSet = statement.executeQuery(sqlScript);
+                String sqlScript = String.format("{call dbo.spGetStudentCountByDepartment(%d) }",ID);
+                /*ResultSet resultSet = statement.executeQuery(sqlScript);
                 resultSet.next();
                 int count = resultSet.getInt("Count");
+
+                CallableStatement proc = connection.prepareCall(sqlScript);
+                proc.registerOutParameter(1, Types.INTEGER);
+                proc.execute();
+                int returnValue = proc.getInt(1);*/
+
+                CallableStatement callableStatement = connection.prepareCall("{call dbo.spGetStudentCountByDepartment(?,?) }");
+                callableStatement.setInt("departmentID", ID);
+                callableStatement.registerOutParameter("result", java.sql.Types.INTEGER);
+                callableStatement.execute();
+                int count = callableStatement.getInt("result");
+
+
+
+
                 connection.close();
                 return count;
             }catch(Exception e){
@@ -597,6 +698,43 @@ public class Database{
             }
         }
 
+
+        public static double GetMathResult(double number, int operation){
+            double result = 0;
+            try{
+                Connection connection = DriverManager.getConnection(url);
+                Statement statement = connection.createStatement();
+
+
+                String sqlScript = "Select ";
+
+                if(operation == 1) sqlScript += String.format("SQUARE(%f)",number);
+                if(operation == 2) sqlScript += String.format("POWER(%f,3)",number);
+                if(operation == 3) sqlScript += String.format("SQRT(%f)",number);
+                if(operation == 4) sqlScript += String.format("TAN(%f)",number);
+                if(operation == 5) sqlScript += String.format("SIN(%f)",number);
+                if(operation == 6) sqlScript += String.format("COS(%f)",number);
+                if(operation == 7) sqlScript += String.format("FLOOR(%f)",number);
+                if(operation == 8) sqlScript += String.format("CEILING(%f)",number);
+                if(operation == 9) sqlScript += String.format("ABS(%f)",number);
+
+
+
+
+
+                sqlScript += "as Result";
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+                boolean isNext =  resultSet.next();
+                if(resultSet.isAfterLast() || !isNext) return  result;
+                result = resultSet.getDouble("Result");
+
+                connection.close();
+                return result;
+            }catch(Exception e){
+                System.out.println("Connection Problem " + e.getMessage());
+                return result;
+            }
+        }
 
     }
 }
