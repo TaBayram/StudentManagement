@@ -2,6 +2,7 @@ package sample;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class Database{
                 return faculties;
 
             }catch(Exception e){
-                System.out.println("Connection Problem");
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
             }
             return null;
         }
@@ -83,7 +84,7 @@ public class Database{
                 connection.close();
                 return true;
             }catch(Exception e){
-                System.out.println("Connection Error: " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
 
             }
             return false;
@@ -106,7 +107,7 @@ public class Database{
                 connection.close();
                 return id;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage()+e.getMessage()+e.getClass());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return 0;
             }
         }
@@ -124,7 +125,7 @@ public class Database{
                 connection.close();
                 return updated;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return false;
             }
         }
@@ -141,7 +142,7 @@ public class Database{
                 connection.close();
                 return true;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return false;
             }
 
@@ -161,7 +162,7 @@ public class Database{
                 return exists;
 
             }catch(Exception e){
-                System.out.println("Connection Problem " +e.getClass() +  e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
             }
             return false;
         }
@@ -202,7 +203,7 @@ public class Database{
                 connection.close();
                 return students;
             }catch(Exception e){
-                System.out.println("Connection Error: " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
 
             }
             return null;
@@ -232,7 +233,7 @@ public class Database{
                 connection.close();
                 return true;
             }catch(Exception e){
-                System.out.println("Connection Error: " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
 
             }
             return false;
@@ -265,7 +266,7 @@ public class Database{
                 return students;
 
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
             }
 
             return null;
@@ -286,7 +287,7 @@ public class Database{
                 connection.close();
                 return id;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return 0;
             }
         }
@@ -304,7 +305,7 @@ public class Database{
                 connection.close();
                 return updated;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return false;
             }
         }
@@ -321,7 +322,7 @@ public class Database{
                 connection.close();
                 return true;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return false;
             }
 
@@ -354,7 +355,7 @@ public class Database{
                 return departments;
 
             }catch(Exception e){
-                System.out.println("Connection Problem"+ e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
             }
             return null;
         }
@@ -378,7 +379,7 @@ public class Database{
                 return departmentNames;
 
             }catch(Exception e){
-                System.out.println("Connection Problem");
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
             }
             return null;
         }
@@ -398,7 +399,7 @@ public class Database{
                 return exists;
 
             }catch(Exception e){
-                System.out.println("Connection Problem " +e.getClass() +  e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
             }
             return false;
         }
@@ -419,7 +420,7 @@ public class Database{
                 connection.close();
                 return id;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage()+e.getMessage()+e.getClass());
+                    DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return 0;
             }
         }
@@ -437,7 +438,7 @@ public class Database{
                 connection.close();
                 return updated;
             }catch(Exception e){
-                System.out.println("Connection Problema " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return false;
             }
         }
@@ -454,7 +455,7 @@ public class Database{
                 connection.close();
                 return true;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return false;
             }
 
@@ -494,7 +495,7 @@ public class Database{
                 connection.close();
                 return teachers;
             }catch(Exception e){
-                System.out.println("Connection Error: " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
             }
             return null;
         }
@@ -524,7 +525,7 @@ public class Database{
                 connection.close();
                 return true;
             }catch(Exception e){
-                System.out.println("Connection Error: " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
 
             }
             return false;
@@ -546,7 +547,7 @@ public class Database{
                 connection.close();
                 return id;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return 0;
             }
 
@@ -566,7 +567,7 @@ public class Database{
                 connection.close();
                 return updated;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return false;
             }
         }
@@ -583,7 +584,7 @@ public class Database{
                 connection.close();
                 return true;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return false;
             }
 
@@ -603,7 +604,7 @@ public class Database{
                 return exists;
 
             }catch(Exception e){
-                System.out.println("Connection Problem " +e.getClass() +  e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
             }
             return false;
         }
@@ -639,7 +640,7 @@ public class Database{
                 connection.close();
                 return people;
             }catch(Exception e){
-                System.out.println("Connection Error: " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
             }
             return null;
         }
@@ -671,7 +672,7 @@ public class Database{
                 connection.close();
                 return count;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return 0;
             }
         }
@@ -693,11 +694,10 @@ public class Database{
                 connection.close();
                 return count;
             }catch(Exception e){
-                System.out.println("Connection Problem Count " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return 0;
             }
         }
-
 
         public static double GetMathResult(double number, int operation){
             double result = 0;
@@ -731,10 +731,24 @@ public class Database{
                 connection.close();
                 return result;
             }catch(Exception e){
-                System.out.println("Connection Problem " + e.getMessage());
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
                 return result;
             }
         }
 
+
+        private static class DatabaseError{
+            Alert alert;
+            DatabaseError(String errorText){
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Database Connection Error");
+                alert.setHeaderText(null);
+                alert.setContentText(errorText);
+                alert.showAndWait();
+            }
+            public void Terminate(){
+                alert.close();
+            }
+        }
     }
 }
