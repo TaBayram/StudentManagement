@@ -6,9 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+
 
 public class Main extends Application {
 
@@ -21,6 +19,7 @@ public class Main extends Application {
         primaryStage.setMinWidth(1200);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("Assets/appIcon.png")));
         primaryStage.show();
+
     }
 
 

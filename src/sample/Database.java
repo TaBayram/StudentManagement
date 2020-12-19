@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 public class Database{
     public static class DatabaseConnection{
+        //private static String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
+
         private static String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
 
         /*##################### FACULTY #################################*/
@@ -744,10 +746,7 @@ public class Database{
                 alert.setTitle("Database Connection Error");
                 alert.setHeaderText(null);
                 alert.setContentText(errorText);
-                alert.showAndWait();
-            }
-            public void Terminate(){
-                alert.close();
+                alert.show();
             }
         }
     }

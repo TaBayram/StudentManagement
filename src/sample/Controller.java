@@ -2,6 +2,7 @@ package sample;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -9,15 +10,13 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.util.converter.DateTimeStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,9 +93,16 @@ public class Controller {
     public TextField TextField_MathInput;
     public TextField TextField_Output;
     public TableColumn TableColumn_FacultyCourseCount;
+    public StackPane StackPane_Main;
 
 
     public void initialize(){
+        SetStudentTableViewProperties();
+        SetDepartmentTableViewProperties();
+        SetFacultyTableViewProperties();
+        SetTeacherTableViewProperties();
+        SetPersonTableViewProperties();
+
         ObservableList<String> options =
                 FXCollections.observableArrayList(
                         "Kare",
@@ -218,16 +224,16 @@ public class Controller {
     private int selectedDepartmentID;
     String studentEmailExtension = "@std.izu.edu.tr";
 
-    public void ShowAllStudent(ActionEvent actionEvent) {
-        students.clear();
-        students = Database.DatabaseConnection.GetAllStudents();
-        if(students.size() == 0){StudentAdd(null); }
-        SetStudentTableViewProperties();
-        TableView_Student.refresh();
-
-        TableColumn_StudentDepartment.setVisible(true);
+    public void ShowAllStudent(ActionEvent actionEvent) throws IOException {
 
         MainPaneHideOthersExceptThis(TableView_Student);
+        if(TableView_Student.isDisabled()) return;
+        students.clear();
+
+        DatabaseTaskCreate("student");
+
+
+
 
     }
 
@@ -377,7 +383,6 @@ public class Controller {
         TableColumn_StudentAdvisorID.setCellValueFactory(new PropertyValueFactory<Student, Integer>("AdvisorID"));
 
         TableView_Student.setEditable(true);
-        TableView_Student.setItems(students);
         TableView_Student.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
@@ -504,16 +509,11 @@ public class Controller {
     String teacherEmailExtension = "@izu.edu.tr";
 
     public void ShowAllTeacher(ActionEvent actionEvent) {
-        teachers.clear();
-        teachers = Database.DatabaseConnection.GetAllTeachers();
-        if(teachers.size() == 0){TeacherAdd(null); }
-        SetTeacherTableViewProperties();
-        TableView_Teacher.refresh();
-
-
-        //TableColumn_StudentDepartment.setVisible(true);
-
         MainPaneHideOthersExceptThis(TableView_Teacher);
+        if(TableView_Teacher.isDisabled()) return;
+        teachers.clear();
+
+        DatabaseTaskCreate("teacher");
 
     }
 
@@ -639,7 +639,6 @@ public class Controller {
         TableColumn_TeacherTitle.setCellValueFactory(new PropertyValueFactory<Teacher, String>("Title"));
 
         TableView_Teacher.setEditable(true);
-        TableView_Teacher.setItems(teachers);
         TableView_Teacher.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
@@ -899,7 +898,70 @@ public class Controller {
         return !hasNonNumericChar;
     }
 
+
+
+    public void DatabaseTaskCreate(String getAllType) {
+        Region veil = new Region();
+        veil.setStyle("-fx-background-color: rgba(0,0,0,0.4)");
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        progressIndicator.setMaxSize(200,200);
+
+
+        Task task = TaskGetAllStudent();
+        if(getAllType.equals("teacher")){
+            task = TaskGetAllTeacher();
+        }
+
+        Thread thread = new Thread(task);
+
+        veil.visibleProperty().bind(task.runningProperty());
+        progressIndicator.visibleProperty().bind(task.runningProperty());
+
+        StackPane_Main.getChildren().addAll(veil,progressIndicator);
+
+        thread.setDaemon(true);
+        thread.start();
+        Task finalTask = task;
+        task.setOnSucceeded(e->{
+            if(getAllType.equals("student")){
+                students = (ObservableList<Student>) finalTask.getValue();
+                if(students.size() == 0){StudentAdd(null); }
+                TableView_Student.setItems(students);
+                TableColumn_StudentDepartment.setVisible(true);
+            }
+            else if(getAllType.equals("teacher")){
+                teachers = (ObservableList<Teacher>) finalTask.getValue();
+                if(teachers.size() == 0){TeacherAdd(null); }
+                TableView_Teacher.setItems(teachers);
+            }
+        });
+
+    }
+
+    private Task TaskGetAllStudent(){
+        return new Task(){
+            @Override
+            protected ObservableList<Student> call() throws Exception {
+                Thread.sleep(100);
+                var results = Database.DatabaseConnection.GetAllStudents();
+                return results;
+            }
+        };
+    }
+    private Task TaskGetAllTeacher(){
+        return new Task(){
+            @Override
+            protected ObservableList<Teacher> call() throws Exception {
+                Thread.sleep(100);
+                var results = Database.DatabaseConnection.GetAllTeachers();
+                return results;
+            }
+        };
+    }
+
+
 }
+
 
 
 
