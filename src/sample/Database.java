@@ -92,7 +92,6 @@ public class Database{
             return false;
         }
 
-
         public static int AddFaculty(Faculty faculty){
             try{
                 Connection connection = DriverManager.getConnection(url);
@@ -198,6 +197,7 @@ public class Database{
                     student.setRegisteredDateFormatted(resultSet.getString("RegisteredDateFormatted"));
                     student.setSemester(resultSet.getInt("Semester"));
                     student.setAdvisorID(resultSet.getInt("AdvisorID"));
+                    student.setGPA(resultSet.getInt("GPA"));
 
                     students.add(student);
 
@@ -247,7 +247,7 @@ public class Database{
 
                 Statement statement = connection.createStatement();
                 //COMPLEX WHERE CLAUSE
-                String sqlScript = String.format("Select * from StudentTable where DepartmentID = (SELECT ID FROM DepartmentTable where ID = '%d')", ID);                                                      //SELECT FROM Kullanildi
+                String sqlScript = String.format("Select *, CONVERT(nvarchar, RegisteredDate, 105) AS RegisteredDateFormatted from StudentTable where DepartmentID = (SELECT ID FROM DepartmentTable where ID = '%d')", ID);                                                      //SELECT FROM Kullanildi
                 ResultSet resultSet = statement.executeQuery(sqlScript);
                 final ObservableList<Student> students = FXCollections.observableArrayList();
 
@@ -261,7 +261,12 @@ public class Database{
                     student.setSurname(resultSet.getString("Surname"));
                     student.setEmail(resultSet.getString("Email"));
                     student.setPassword(resultSet.getString("Password"));
+                    student.setRegisteredDate(resultSet.getDate("RegisteredDate"));
+                    student.setRegisteredDateFormatted(resultSet.getString("RegisteredDateFormatted"));
                     student.setDepartmentID(String.valueOf(resultSet.getInt("DepartmentID")));
+                    student.setSemester(resultSet.getInt("Semester"));
+                    student.setAdvisorID(resultSet.getInt("AdvisorID"));
+                    student.setGPA(resultSet.getInt("GPA"));
                     students.add(student);
                 }
                 connection.close();
@@ -385,7 +390,6 @@ public class Database{
             }
             return null;
         }
-
 
         public static boolean DoesDepartmentExist(int ID){
             try{

@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="1200.0" prefHeight="850.0" prefWidth="1400.0" style="-fx-background-color: #21015C;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
@@ -120,6 +121,19 @@
                               <AnchorPane fx:id="Pane_Information" disable="true" maxHeight="50.0" prefHeight="50.0" prefWidth="200.0">
                                  <children>
                                     <Label fx:id="Label_Count" layoutX="892.0" layoutY="11.0" prefHeight="17.0" prefWidth="128.0" textFill="WHITE" />
+                                    <Label fx:id="Label_Title" alignment="CENTER" layoutY="2.0" prefHeight="38.0" prefWidth="356.0" text="HOME" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <font>
+                                          <Font name="Marlett" size="25.0" />
+                                       </font>
+                                       <textFill>
+                                          <LinearGradient endX="1.0" endY="1.0">
+                                             <stops>
+                                                <Stop color="#eafff0" />
+                                                <Stop color="#d9fffa" offset="1.0" />
+                                             </stops>
+                                          </LinearGradient>
+                                       </textFill>
+                                    </Label>
                                  </children>
                               </AnchorPane>
                               <Pane fx:id="Pane_Buttons" prefHeight="75.0" prefWidth="1050.0">
@@ -186,6 +200,7 @@
                                     <TableColumn fx:id="TableColumn_StudentRegisteredDate" maxWidth="134.0" minWidth="39.0" onEditCommit="#StudentTableChangeCommit" prefWidth="99.0" text="Kayıt Tarihi" />
                                     <TableColumn fx:id="TableColumn_StudentSemester" maxWidth="102.0" minWidth="25.0" onEditCommit="#StudentTableChangeCommit" prefWidth="67.0" text="Dönem" />
                                     <TableColumn fx:id="TableColumn_StudentAdvisorID" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="82.0" text="Danışman" />
+                                    <TableColumn fx:id="TableColumn_StudentGPA" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="82.0" text="GNO" />
                                 </columns>
                               </TableView>
                               <TableView fx:id="TableView_Department" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="725.0" prefWidth="1000.0" style="-fx-: #013D57;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -235,6 +250,16 @@
                   </AnchorPane>
                </children>
             </HBox>
+            <AnchorPane fx:id="AnchorPane_LogIn" opacity="0.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: rgb(85,25,150);">
+               <children>
+                  <PasswordField fx:id="TextField_LogIn" layoutX="624.0" layoutY="425.0" onKeyPressed="#KeyPressPassword" />
+                  <Label fx:id="Label_EnterPassword" alignment="CENTER" contentDisplay="CENTER" layoutX="512.0" layoutY="332.0" text="ENTER THE PASSWORD" textAlignment="CENTER" AnchorPane.bottomAnchor="465.0" AnchorPane.leftAnchor="512.0" AnchorPane.rightAnchor="512.0" AnchorPane.topAnchor="332.0">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
          </children>
       </StackPane>
    </children>

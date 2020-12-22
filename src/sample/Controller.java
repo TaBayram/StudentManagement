@@ -94,9 +94,16 @@ public class Controller {
     public TextField TextField_Output;
     public TableColumn TableColumn_FacultyCourseCount;
     public StackPane StackPane_Main;
+    public Label Label_Title;
+    public AnchorPane AnchorPane_LogIn;
+    public PasswordField TextField_LogIn;
+    public Label Label_EnterPassword;
+    public TableColumn TableColumn_StudentGPA;
 
 
     public void initialize(){
+
+        AnchorPane_LogIn.setOpacity(1);
         SetStudentTableViewProperties();
         SetDepartmentTableViewProperties();
         SetFacultyTableViewProperties();
@@ -126,12 +133,10 @@ public class Controller {
     ObservableList<Faculty> faculties = FXCollections.observableArrayList();
 
     public void ShowFaculty(ActionEvent actionEvent) {
-        faculties.clear();
-        faculties =  Database.DatabaseConnection.GetAllFaculties();
-        if(faculties.size() == 0){FacultyAdd(null); }
-        SetFacultyTableViewProperties();
-        TableView_Faculty.refresh();
         MainPaneHideOthersExceptThis(TableView_Faculty);
+        faculties.clear();
+        DatabaseTaskCreate("faculty");
+
     }
 
     public void FacultyTableChangeCommit(TableColumn.CellEditEvent event) {
@@ -225,11 +230,9 @@ public class Controller {
     String studentEmailExtension = "@std.izu.edu.tr";
 
     public void ShowAllStudent(ActionEvent actionEvent) throws IOException {
-
         MainPaneHideOthersExceptThis(TableView_Student);
         if(TableView_Student.isDisabled()) return;
         students.clear();
-
         DatabaseTaskCreate("student");
 
 
@@ -238,22 +241,10 @@ public class Controller {
     }
 
     public void ShowStudentsByDepartmentID(int ID) {
-        students.clear();
-        students = Database.DatabaseConnection.GetStudentListByDepartmentID(ID);
-        SetSelectedDepartmentID(ID);
-        SetStudentTableViewProperties();
-        TableView_Student.refresh();
-
-
-
-
-        TableColumn_StudentDepartment.setVisible(false);
-
-
-
         MainPaneHideOthersExceptThis(TableView_Student);
-
-        ShowAllStudentCountByDepartment();
+        if(TableView_Student.isDisabled()) return;
+        students.clear();
+        DatabaseTaskCreate(ID);
 
     }
 
@@ -381,6 +372,7 @@ public class Controller {
         TableColumn_StudentRegisteredDate.setCellValueFactory(new PropertyValueFactory<Student, String>("RegisteredDateFormatted"));
         TableColumn_StudentSemester.setCellValueFactory(new PropertyValueFactory<Student, Integer>("Semester"));
         TableColumn_StudentAdvisorID.setCellValueFactory(new PropertyValueFactory<Student, Integer>("AdvisorID"));
+        TableColumn_StudentGPA.setCellValueFactory(new PropertyValueFactory<Student, Integer>("GPA"));
 
         TableView_Student.setEditable(true);
         TableView_Student.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -403,18 +395,11 @@ public class Controller {
 
     @FXML
     public void ShowDepartments(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
-        departments.clear();
-        departments =  Database.DatabaseConnection.GetAllDepartments();
-        SetStudentTableViewProperties();
 
-         for (Department department: departments) {
-            department.setButton(new Button("Show Student"));
-            department.getButton().setOnAction(OnDepartmentClick);
-            department.getButton().getStyleClass().add("ShowStudentButton");
-        }
-        SetDepartmentTableViewProperties();
-        TableView_Department.refresh();
         MainPaneHideOthersExceptThis(TableView_Department);
+        departments.clear();
+        DatabaseTaskCreate("department");
+
 
     }
 
@@ -646,17 +631,12 @@ public class Controller {
     ObservableList<Person> people = FXCollections.observableArrayList();
 
     public void ShowAllPeople(ActionEvent actionEvent) {
-        people.clear();
-        people = Database.DatabaseConnection.GetAllPeople();
-        if(people.size() == 0){ErrorAlert errorAlert = new ErrorAlert("There are no people to show!"); return; }
-        SetPersonTableViewProperties();
-        TableView_Person.refresh();
-        //ShowAllTeacherCount();
-
-
-        //TableColumn_StudentDepartment.setVisible(true);
-
         MainPaneHideOthersExceptThis(TableView_Person);
+        people.clear();
+        DatabaseTaskCreate("person");
+
+
+
 
     }
 
@@ -748,6 +728,25 @@ public class Controller {
             Pane_Information.setOpacity(1);
             Pane_Information.setDisable(false);
         }
+
+        if(!TableView_Student.isDisabled()){
+            Label_Title.setText("Students");
+        }
+        else if(!TableView_Teacher.isDisabled()){
+            Label_Title.setText("Teachers");
+        }
+        else if(!TableView_Department.isDisabled()){
+            Label_Title.setText("Department");
+        }
+        else if(!TableView_Faculty.isDisabled()){
+            Label_Title.setText("Faculties");
+        }
+        else if(!TableView_Person.isDisabled()){
+            Label_Title.setText("People");
+        }
+        else{
+            Label_Title.setText("Home");
+        }
     }
 
     public void DoMath(KeyEvent keyEvent) {
@@ -803,6 +802,20 @@ public class Controller {
         }
         TableView_Teacher.refresh();
 
+
+    }
+
+    public void KeyPressPassword(KeyEvent keyEvent) {
+        if(keyEvent.getCode().equals(KeyCode.ENTER)){
+            String input = TextField_LogIn.getText();
+            if(input.equals("1234")){
+                StackPane_Main.getChildren().remove(AnchorPane_LogIn);
+            }
+            else{
+                Label_EnterPassword.setText("TRY AGAIN");
+            }
+
+        }
 
     }
 
@@ -900,24 +913,37 @@ public class Controller {
 
 
 
-    public void DatabaseTaskCreate(String getAllType) {
+    private void VeilIndicator(Task task){
         Region veil = new Region();
         veil.setStyle("-fx-background-color: rgba(0,0,0,0.4)");
         ProgressIndicator progressIndicator = new ProgressIndicator();
         progressIndicator.setMaxSize(200,200);
-
-
-        Task task = TaskGetAllStudent();
-        if(getAllType.equals("teacher")){
-            task = TaskGetAllTeacher();
-        }
-
-        Thread thread = new Thread(task);
-
         veil.visibleProperty().bind(task.runningProperty());
         progressIndicator.visibleProperty().bind(task.runningProperty());
 
         StackPane_Main.getChildren().addAll(veil,progressIndicator);
+    }
+
+
+    public void DatabaseTaskCreate(String getAllType) {
+        Task task = TaskGetAllStudent();
+        if(getAllType.equals("teacher")){
+            task = TaskGetAllTeacher();
+        }
+        else if(getAllType.equals("faculty")){
+            task = TaskGetAllFaculty();
+        }
+        else if(getAllType.equals("department")){
+            task = TaskGetAllDepartment();
+        }
+        else if(getAllType.equals("person")){
+            task = TaskGetAllPerson();
+        }
+
+        Thread thread = new Thread(task);
+
+        VeilIndicator(task);
+
 
         thread.setDaemon(true);
         thread.start();
@@ -934,6 +960,45 @@ public class Controller {
                 if(teachers.size() == 0){TeacherAdd(null); }
                 TableView_Teacher.setItems(teachers);
             }
+            else if(getAllType.equals("faculty")){
+                faculties = (ObservableList<Faculty>) finalTask.getValue();
+                if(faculties.size() == 0){FacultyAdd(null); }
+                TableView_Faculty.setItems(faculties);
+            }
+            else if(getAllType.equals("department")){
+                departments = (ObservableList<Department>) finalTask.getValue();
+                if(departments.size() == 0){DepartmentAdd(null); }
+                TableView_Department.setItems(departments);
+                for (Department department: departments) {
+                    department.setButton(new Button("Show Student"));
+                    department.getButton().setOnAction(OnDepartmentClick);
+                    department.getButton().getStyleClass().add("ShowStudentButton");
+                }
+            }
+            else if(getAllType.equals("person")){
+                people = (ObservableList<Person>) finalTask.getValue();
+                TableView_Person.setItems(people);
+                if(people.size() == 0){ErrorAlert errorAlert = new ErrorAlert("There are no people to show!"); return; }
+            }
+        });
+
+    }
+
+    public void DatabaseTaskCreate(int DepartmentID) {
+        Task task = TaskGetStudentsByDepartment(DepartmentID);
+        Thread thread = new Thread(task);
+        VeilIndicator(task);
+        thread.setDaemon(true);
+        thread.start();
+        System.out.println(DepartmentID);
+        Task finalTask = task;
+        task.setOnSucceeded(e->{
+            students = (ObservableList<Student>) finalTask.getValue();
+            SetSelectedDepartmentID(DepartmentID);
+            if(students.size() == 0){StudentAdd(null); }
+            TableView_Student.setItems(students);
+            TableColumn_StudentDepartment.setVisible(false);
+            ShowAllStudentCountByDepartment();
         });
 
     }
@@ -942,7 +1007,7 @@ public class Controller {
         return new Task(){
             @Override
             protected ObservableList<Student> call() throws Exception {
-                Thread.sleep(100);
+                //Thread.sleep(100);
                 var results = Database.DatabaseConnection.GetAllStudents();
                 return results;
             }
@@ -952,8 +1017,48 @@ public class Controller {
         return new Task(){
             @Override
             protected ObservableList<Teacher> call() throws Exception {
-                Thread.sleep(100);
+                //Thread.sleep(100);
                 var results = Database.DatabaseConnection.GetAllTeachers();
+                return results;
+            }
+        };
+    }
+    private Task TaskGetAllFaculty(){
+        return new Task(){
+            @Override
+            protected ObservableList<Faculty> call() throws Exception {
+                //Thread.sleep(100);
+                var results = Database.DatabaseConnection.GetAllFaculties();
+                return results;
+            }
+        };
+    }
+    private Task TaskGetAllDepartment(){
+        return new Task(){
+            @Override
+            protected ObservableList<Department> call() throws Exception {
+                //Thread.sleep(100);
+                var results = Database.DatabaseConnection.GetAllDepartments();
+                return results;
+            }
+        };
+    }
+    private Task TaskGetAllPerson(){
+        return new Task(){
+            @Override
+            protected ObservableList<Person> call() throws Exception {
+                //Thread.sleep(100);
+                var results = Database.DatabaseConnection.GetAllPeople();
+                return results;
+            }
+        };
+    }
+    private Task TaskGetStudentsByDepartment(int ID){
+        return new Task(){
+            @Override
+            protected ObservableList<Student> call() throws Exception {
+                Thread.sleep(100);
+                var results= Database.DatabaseConnection.GetStudentListByDepartmentID(ID);
                 return results;
             }
         };

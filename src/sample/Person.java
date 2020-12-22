@@ -4,6 +4,15 @@ import java.util.Date;
 
 public class Person {
 
+    int ID;
+    String Name;
+    String Surname;
+    String Password;
+    String Email;
+    String DepartmentID;
+    String DepartmentName;
+    String RegisteredDateFormatted;
+    String enter = "Giriniz";
 
     public Person() {
         this.ID = 0;
@@ -15,15 +24,7 @@ public class Person {
         DepartmentName = enter;
     }
 
-    int ID;
-    String Name;
-    String Surname;
-    String Password;
-    String Email;
-    String DepartmentID;
-    String DepartmentName;
-    String RegisteredDateFormatted;
-    String enter = "Giriniz";
+
 
     public int getID() {
         return ID;

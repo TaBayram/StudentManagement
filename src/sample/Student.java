@@ -6,6 +6,34 @@ import java.util.Date;
 
 public class Student {
 
+    int ID;
+    String Name;
+    String Surname;
+    String Password;
+    String Email;
+    String DepartmentID;
+    String DepartmentName;
+    Date RegisteredDate;
+    String RegisteredDateFormatted;
+    Integer Semester;
+    Integer AdvisorID;
+    Integer GPA;
+    String enter = "Giriniz";
+
+    public Student() {
+        ID = 0;
+        DepartmentName = enter;
+        Name = enter;
+        Surname = enter;
+        Password = enter;
+        Email = enter;
+        DepartmentID = enter;
+        AdvisorID = 0;
+        GPA = 0;
+    }
+
+
+
     public int getID() {
         return ID;
     }
@@ -94,33 +122,14 @@ public class Student {
         RegisteredDateFormatted = registeredDateFormatted;
     }
 
-
-    String DepartmentName;
-    int ID;
-    String Name;
-    String Surname;
-    String Password;
-    String Email;
-
-    public Student() {
-        ID = 0;
-        DepartmentName = enter;
-        Name = enter;
-        Surname = enter;
-        Password = enter;
-        Email = enter;
-        DepartmentID = enter;
-        AdvisorID = 0;
+    public Integer getGPA() {
+        return GPA;
     }
 
-    String DepartmentID;
+    public void setGPA(Integer GPA) {
+        this.GPA = GPA;
+    }
 
 
-    Date RegisteredDate;
-    String RegisteredDateFormatted;
-    Integer Semester;
-    Integer AdvisorID;
-
-    String enter = "Giriniz";
 
 }

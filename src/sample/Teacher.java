@@ -4,6 +4,28 @@ import java.util.Date;
 
 public class Teacher {
 
+    int ID;
+    String Name;
+    String Surname;
+    String Email;
+    String Title;
+    String Password;
+    String HiddenPassword;
+    String DepartmentID;
+    Date RegisteredDate;
+    String DepartmentName;
+    String enter = "Giriniz";
+
+    public Teacher() {
+        ID = 0;
+        Name = enter;
+        Surname = enter;
+        Email = enter;
+        Title = enter;
+        Password = enter;
+        DepartmentID = enter;
+    }
+
 
 
     public int getID() {
@@ -79,27 +101,6 @@ public class Teacher {
         HiddenPassword = hiddenPassword;
     }
 
-    int ID;
-    String Name;
-    String Surname;
-    String Email;
-    String Title;
-    String Password;
-    String HiddenPassword;
-    String DepartmentID;
-    Date RegisteredDate;
-    String DepartmentName;
-    String enter = "Giriniz";
-
-    public Teacher() {
-        ID = 0;
-        Name = enter;
-        Surname = enter;
-        Email = enter;
-        Title = enter;
-        Password = enter;
-        DepartmentID = enter;
-    }
 
     public String getDepartmentName() {
         return DepartmentName;

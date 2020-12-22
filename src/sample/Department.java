@@ -4,6 +4,24 @@ import javafx.scene.control.Button;
 
 public class Department {
 
+    int ID;
+    String Name;
+    String language;
+    String DepartmentChair;
+    Button button;
+    String DepartmentFacultyID;
+
+    String enter = "Giriniz";
+    public Department() {
+        this.ID = ID;
+        Name = enter;
+        this.language = enter;
+        DepartmentChair = enter;
+        this.button = button;
+        DepartmentFacultyID = enter;
+    }
+
+
     public int getID() {
         return ID;
     }
@@ -52,21 +70,4 @@ public class Department {
         DepartmentFacultyID = departmentFacultyID;
     }
 
-
-    int ID;
-    String Name;
-    String language;
-    String DepartmentChair;
-    Button button;
-    String DepartmentFacultyID;
-
-    String enter = "Giriniz";
-    public Department() {
-        this.ID = ID;
-        Name = enter;
-        this.language = enter;
-        DepartmentChair = enter;
-        this.button = button;
-        DepartmentFacultyID = enter;
-    }
 }

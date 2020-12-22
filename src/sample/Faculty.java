@@ -1,6 +1,21 @@
 package sample;
 
 public class Faculty {
+
+    int ID;
+    String Name;
+    String FacultyChair;
+    String FacultyChairName;
+    int FacultyCourseCount;
+    String enter = "Giriniz";
+
+    public Faculty() {
+        this.ID = ID;
+        Name = enter;
+        FacultyChair = enter;
+    }
+
+
     public int getID() {
         return ID;
     }
@@ -25,10 +40,6 @@ public class Faculty {
         FacultyChair = facultyChair;
     }
 
-    int ID;
-    String Name;
-    String FacultyChair;
-
     public String getFacultyChairName() {
         return FacultyChairName;
     }
@@ -36,9 +47,6 @@ public class Faculty {
     public void setFacultyChairName(String facultyChairName) {
         FacultyChairName = facultyChairName;
     }
-
-    String FacultyChairName;
-    String enter = "Giriniz";
 
     public int getFacultyCourseCount() {
         return FacultyCourseCount;
@@ -48,11 +56,5 @@ public class Faculty {
         FacultyCourseCount = facultyCourseCount;
     }
 
-    int FacultyCourseCount;
 
-    public Faculty() {
-        this.ID = ID;
-        Name = enter;
-        FacultyChair = enter;
-    }
 }
