@@ -478,7 +478,7 @@ public class Database{
                 Statement statement = connection.createStatement();
                 //CallableStatement stmt = connection.prepareCall("{}")
 
-                String sqlScript = "Select *, REPLACE(Password, Password, '****') as HiddenPassword From TeacherTable";
+                String sqlScript = "Select *, REPLACE(Password, Password, '****') as HiddenPassword From TeacherTable with(INDEX(IX_TeacherTable_Name))";
                 ResultSet resultSet = statement.executeQuery(sqlScript);
                 final ObservableList<Teacher> teachers = FXCollections.observableArrayList();
 
