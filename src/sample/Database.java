@@ -286,6 +286,7 @@ public class Database{
                 //INSERT VALUES
                 String sqlScript = String.format("spAddStudent '%s', '%s','%s', '%s', %d,%d", student.getName(),student.getSurname(),student.getPassword(),student.getEmail(), Integer.parseInt(student.getDepartmentID()),student.getAdvisorID());
                 ResultSet resultSet = statement.executeQuery(sqlScript);
+                //ResultSet resultSet = statement.executeQuery("SELECT SCOPE_IDENTITY()");
                 int id = 0;
                 resultSet.next();
                 if(resultSet.isAfterLast()) return 0;
