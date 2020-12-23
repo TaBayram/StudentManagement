@@ -1,11 +1,10 @@
-
 .table-cell {
     -fx-text-fill: black;
 }
 
 .table-view:focused .table-row-cell:selected .table-cell {
-    -fx-text-fill: white;
-    -fx-background-color: #4488AA;
+    -fx-text-fill: black;
+    -fx-background-color: #bcd1d1;
 }
 
 .ShowStudentButton{
@@ -14,38 +13,57 @@
 
 .table-row-cell:odd{
 
-   -fx-background-color: #D6F1FF;
+   -fx-background-color: #E6E6E6;
 }
 
 .table-row-cell:even{
-   -fx-background-color: #C2EBFF;
+   -fx-background-color: #F2F2F2;
 }
 
 .regularbutton{
-    -fx-background-color: #dac9f2;
+    -fx-background-color: #728F9E;
     -fx-border: none;
+    -fx-text-fill: #e3edff;
     -fx-border-radius: 10px;
 }
 
 .regularbutton:hover{
-    -fx-background-color: #beb3ff;
+    -fx-background-color: #698491;
 }
 
 
 .mainbutton{
     -fx-scale-x: 1;
     -fx-scale-y: 1;
-    -fx-background-color: #dac9f2;
+    -fx-background-color: #90ABE0;
+    -fx-text-fill: #2F384A;
     -fx-border: none;
     -fx-border-radius: 10px;
 }
 
 .mainbutton:hover{
-    -fx-background-color: #beb3ff;
+    -fx-background-color: #4D5B78;
 }
 
 .mainbutton:pressed{
-    -fx-background-color: #664ff0;
+    -fx-background-color: #9cb8ff;
+    -fx-effect: dropshadow( one-pass-box , rgba(200,200,255,0.50) , 4, 25.0 , 0 , 0);
 }
 
 
+#AnchorPane_LogIn{
+    -fx-background-color: #748db3;
+}
+
+
+#Pane_LeftSide{
+    -fx-background-color: #323840;
+}
+
+#Pane_RightSide{
+    -fx-background-color: #C1D6F5;
+}
+
+.maintextcolor{
+    -fx-text-fill: black;
+}
