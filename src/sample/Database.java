@@ -743,6 +743,30 @@ public class Database{
             }
         }
 
+        public static ObservableList<String> GetLeftTeachers(){
+            try{
+                Connection connection = DriverManager.getConnection(url);
+                Statement statement = connection.createStatement();
+
+                String sqlScript = "Select Info From LeftTeacherTable";
+                ResultSet resultSet = statement.executeQuery(sqlScript);
+                final ObservableList<String> teachers = FXCollections.observableArrayList();
+
+                int i = 0;
+                while(true){
+                    boolean isNext =  resultSet.next();
+                    if(resultSet.isAfterLast() || !isNext) break;
+                    String string = resultSet.getString("Info");
+                    teachers.add(string);
+                }
+                connection.close();
+                return teachers;
+            }catch(Exception e){
+                DatabaseError databaseError = new DatabaseError(e.getMessage());
+            }
+            return null;
+        }
+
 
         private static class DatabaseError{
             Alert alert;

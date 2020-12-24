@@ -97,6 +97,21 @@
                                           </ImageView>
                                        </graphic>
                                     </Button>
+                                    <Button fx:id="Button_LeftTeacher" graphicTextGap="17.0" layoutX="65.0" layoutY="375.0" minHeight="56.0" minWidth="200.0" mnemonicParsing="false" onAction="#ShowLeftTeachers" prefHeight="60.0" prefWidth="240.0" styleClass="mainbutton" text="Left Teachers">
+                                       <font>
+                                          <Font name="MS Outlook" size="20.0" />
+                                       </font>
+                                       <graphic>
+                                          <ImageView fitHeight="54.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: 0px;">
+                                             <image>
+                                                <Image url="@Assets/files.png" />
+                                             </image>
+                                             <viewport>
+                                                <Rectangle2D height="64.0" width="64.0" />
+                                             </viewport>
+                                          </ImageView>
+                                       </graphic>
+                                    </Button>
                                     <TitledPane animated="false" minHeight="75.0" minWidth="150.0" prefHeight="75.0" prefWidth="200.0" text="Matematik" textAlignment="CENTER">
                                       <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="50.0" prefWidth="350.0">
@@ -239,6 +254,7 @@
                                     <TableColumn fx:id="TableColumn_FacultyCourseCount" maxWidth="200.0" minWidth="0.0" prefWidth="120.0" text="Fakülte Ders Sayısı" />
                                  </columns>
                               </TableView>
+                              <ListView fx:id="ListView_LeftTeacherTable" disable="true" opacity="0.0" prefHeight="730.0" prefWidth="1010.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                            </children>
                         </AnchorPane>
                      </children>

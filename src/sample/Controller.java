@@ -99,6 +99,7 @@ public class Controller {
     public PasswordField TextField_LogIn;
     public Label Label_EnterPassword;
     public TableColumn TableColumn_StudentGPA;
+    public ListView ListView_LeftTeacherTable;
 
 
     public void initialize(){
@@ -227,9 +228,11 @@ public class Controller {
 
     private boolean isDepartmentColumnID = true;
     private int selectedDepartmentID;
+    private String selectedDepartmentName;
     String studentEmailExtension = "@std.izu.edu.tr";
 
     public void ShowAllStudent(ActionEvent actionEvent) throws IOException {
+        TableColumn_StudentDepartment.setVisible(true);
         MainPaneHideOthersExceptThis(TableView_Student);
         if(TableView_Student.isDisabled()) return;
         students.clear();
@@ -241,6 +244,13 @@ public class Controller {
     }
 
     public void ShowStudentsByDepartmentID(int ID) {
+        TableColumn_StudentDepartment.setVisible(false);
+        for(Department department: departments){
+            if(department.getID() == ID){
+                SetSelectedDepartmentID(ID,department.getName());
+
+            }
+        }
         MainPaneHideOthersExceptThis(TableView_Student);
         if(TableView_Student.isDisabled()) return;
         students.clear();
@@ -655,8 +665,9 @@ public class Controller {
         TableView_Person.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
-    public void SetSelectedDepartmentID(int ID){
+    public void SetSelectedDepartmentID(int ID, String name){
         selectedDepartmentID = ID;
+        selectedDepartmentName = name;
     }
 
     public void ShowAllStudentCountByDepartment(){
@@ -677,7 +688,8 @@ public class Controller {
                     }
                 }
                 if(!hasFoundIt) ButtonPaneHideOthersExceptThis(null);
-                Label_Count.textProperty().setValue(name + " Count: " + Database.DatabaseConnection.GetCount(name));
+                if(control != ListView_LeftTeacherTable)
+                    Label_Count.textProperty().setValue(name + " Count: " + Database.DatabaseConnection.GetCount(name));
                 if(!control.isDisable()){
                     control.setOpacity(0);
                     control.setDisable(true);
@@ -731,6 +743,10 @@ public class Controller {
 
         if(!TableView_Student.isDisabled()){
             Label_Title.setText("Students");
+            if(!TableColumn_StudentDepartment.isVisible()){
+                Label_Title.setText("Students in " + selectedDepartmentName);
+            }
+
         }
         else if(!TableView_Teacher.isDisabled()){
             Label_Title.setText("Teachers");
@@ -743,6 +759,10 @@ public class Controller {
         }
         else if(!TableView_Person.isDisabled()){
             Label_Title.setText("People");
+        }
+        else if(!ListView_LeftTeacherTable.isDisabled()){
+            Label_Title.setText("Left Teachers");
+
         }
         else{
             Label_Title.setText("Home");
@@ -816,6 +836,16 @@ public class Controller {
             }
 
         }
+
+    }
+
+    public void ShowLeftTeachers(ActionEvent actionEvent) {
+        MainPaneHideOthersExceptThis(ListView_LeftTeacherTable);
+        var list = Database.DatabaseConnection.GetLeftTeachers();
+        ListView_LeftTeacherTable.setItems(list);
+        Label_Count.setText("Log Count: " + ListView_LeftTeacherTable.getItems().size());
+
+
 
     }
 
@@ -953,7 +983,6 @@ public class Controller {
                 students = (ObservableList<Student>) finalTask.getValue();
                 if(students.size() == 0){StudentAdd(null); }
                 TableView_Student.setItems(students);
-                TableColumn_StudentDepartment.setVisible(true);
             }
             else if(getAllType.equals("teacher")){
                 teachers = (ObservableList<Teacher>) finalTask.getValue();
@@ -990,14 +1019,11 @@ public class Controller {
         VeilIndicator(task);
         thread.setDaemon(true);
         thread.start();
-        System.out.println(DepartmentID);
         Task finalTask = task;
         task.setOnSucceeded(e->{
             students = (ObservableList<Student>) finalTask.getValue();
-            SetSelectedDepartmentID(DepartmentID);
             if(students.size() == 0){StudentAdd(null); }
             TableView_Student.setItems(students);
-            TableColumn_StudentDepartment.setVisible(false);
             ShowAllStudentCountByDepartment();
         });
 
