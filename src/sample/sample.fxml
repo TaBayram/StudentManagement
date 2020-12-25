@@ -116,8 +116,8 @@
                                       <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="50.0" prefWidth="350.0">
                                              <children>
-                                                <ComboBox fx:id="ComboBox_Math" layoutX="130.0" layoutY="14.0" prefHeight="28.0" prefWidth="88.0" promptText="Operation" styleClass="regularbutton" />
-                                                <TextField fx:id="TextField_MathInput" layoutX="14.0" layoutY="15.0" onKeyPressed="#DoMath" prefHeight="26.0" prefWidth="100.0" />
+                                                <ComboBox fx:id="ComboBox_Math" layoutX="107.0" layoutY="14.0" prefHeight="28.0" prefWidth="111.0" promptText="Operation" styleClass="regularbutton" />
+                                                <TextField fx:id="TextField_MathInput" layoutX="14.0" layoutY="15.0" onKeyPressed="#DoMath" prefHeight="26.0" prefWidth="76.0" />
                                                 <TextField fx:id="TextField_Output" editable="false" layoutX="235.0" layoutY="15.0" prefHeight="26.0" prefWidth="100.0" />
                                              </children>
                                           </AnchorPane>
@@ -206,7 +206,7 @@
                                     <TableColumn fx:id="TableColumn_StudentSurname" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Soyad" />
                                     <TableColumn fx:id="TableColumn_StudentPassword" maxWidth="200.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="100.0" text="Parola" />
                                     <TableColumn fx:id="TableColumn_StudentEmail" maxWidth="250.0" minWidth="75.0" onEditCommit="#StudentTableChangeCommit" prefWidth="179.0" text="E-Posta" />
-                                    <TableColumn fx:id="TableColumn_StudentDepartment" maxWidth="150.0" minWidth="20.0" onEditCommit="#StudentTableChangeCommit" prefWidth="66.0" text="Bölüm" />
+                                    <TableColumn fx:id="TableColumn_StudentDepartment" maxWidth="200.0" minWidth="30.0" onEditCommit="#StudentTableChangeCommit" prefWidth="75.0" text="Bölüm" />
                                     <TableColumn fx:id="TableColumn_StudentRegisteredDate" maxWidth="134.0" minWidth="39.0" onEditCommit="#StudentTableChangeCommit" prefWidth="99.0" text="Kayıt Tarihi" />
                                     <TableColumn fx:id="TableColumn_StudentSemester" maxWidth="102.0" minWidth="25.0" onEditCommit="#StudentTableChangeCommit" prefWidth="67.0" text="Dönem" />
                                     <TableColumn fx:id="TableColumn_StudentAdvisorID" maxWidth="150.0" minWidth="50.0" onEditCommit="#StudentTableChangeCommit" prefWidth="82.0" text="Danışman" />
@@ -216,9 +216,10 @@
                               <TableView fx:id="TableView_Department" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="725.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <columns>
                                     <TableColumn fx:id="TableColumn_DepartmentID" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Numara" />
-                                    <TableColumn fx:id="TableColumn_DepartmentName" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Ad" />
+                                    <TableColumn fx:id="TableColumn_DepartmentName" maxWidth="250.0" minWidth="150.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="175.0" text="Ad" />
                                     <TableColumn fx:id="TableColumn_DepartmentLanguage" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Dil" />
                                     <TableColumn fx:id="TableColumn_DepartmentChair" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Başkan" />
+                                    <TableColumn fx:id="TableColumn_DepartmentCourseCount" maxWidth="75.0" minWidth="25.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="50.0" text="Ders Sayısı" />
                                     <TableColumn fx:id="TableColumn_DepartmentFacultyID" maxWidth="150.0" minWidth="50.0" onEditCommit="#DepartmentTableChangeCommit" prefWidth="100.0" text="Fakülte ID" />
                                     <TableColumn fx:id="TableColumn_DepartmentStudent" maxWidth="150.0" minWidth="50.0" prefWidth="100.0" text="Göster" />
                                  </columns>
@@ -249,7 +250,7 @@
                               <TableView fx:id="TableView_Faculty" disable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="730.0" prefWidth="1010.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <columns>
                                     <TableColumn fx:id="TableColumn_FacultyID" maxWidth="100.0" minWidth="50.0" onEditCommit="#FacultyTableChangeCommit" prefWidth="75.0" text="Fakülte ID" />
-                                    <TableColumn fx:id="TableColumn_FacultyName" maxWidth="226.0" minWidth="50.0" onEditCommit="#FacultyTableChangeCommit" prefWidth="226.0" text="Fakülte İsmi" />
+                                    <TableColumn fx:id="TableColumn_FacultyName" maxWidth="300.0" minWidth="75.0" onEditCommit="#FacultyTableChangeCommit" prefWidth="250.0" text="Fakülte İsmi" />
                                     <TableColumn fx:id="TableColumn_FacultyChair" maxWidth="200.0" minWidth="0.0" onEditCommit="#FacultyTableChangeCommit" prefWidth="120.0" text="Fakülte Başkanı" />
                                     <TableColumn fx:id="TableColumn_FacultyCourseCount" maxWidth="200.0" minWidth="0.0" prefWidth="120.0" text="Fakülte Ders Sayısı" />
                                  </columns>

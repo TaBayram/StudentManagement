@@ -2,6 +2,7 @@ package sample;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 
 import java.sql.*;
@@ -12,6 +13,7 @@ public class Database{
         //private static String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
 
         private static String url = "jdbc:sqlserver://localhost:1433;" + "databaseName=StudentDatabase;integratedSecurity=true";
+        private static String urlWDatabase = "jdbc:sqlserver://localhost:1433;" + "integratedSecurity=true";
 
         /*##################### FACULTY #################################*/
 
@@ -156,9 +158,12 @@ public class Database{
                 Statement statement = connection.createStatement();
                 String sqlScript = String.format("SELECT COUNT(ID) COUNT FROM FacultyTable WHERE ID = %d",ID);                                                      //SELECT FROM
                 ResultSet resultSet = statement.executeQuery(sqlScript);
+
                 boolean exists = true;
                 resultSet.next();
-                if(resultSet.getInt("COUNT") == 0) exists = false;
+                if(resultSet.getInt("COUNT") == 0) {
+                    exists = false;
+                }
                 connection.close();
                 return exists;
 
@@ -197,7 +202,7 @@ public class Database{
                     student.setRegisteredDateFormatted(resultSet.getString("RegisteredDateFormatted"));
                     student.setSemester(resultSet.getInt("Semester"));
                     student.setAdvisorID(resultSet.getInt("AdvisorID"));
-                    student.setGPA(resultSet.getInt("GPA"));
+                    student.setGPA(resultSet.getFloat("GPA"));
 
                     students.add(student);
 
@@ -357,6 +362,7 @@ public class Database{
                     department.setLanguage(resultSet.getString("Language"));
                     department.setDepartmentChair(resultSet.getString("DepartmentChair"));
                     department.setDepartmentFacultyID(resultSet.getString("FacultyID"));
+                    department.setCourseCount(String.valueOf(resultSet.getInt("CourseCount")));
                     departments.add(department);
                 }
                 connection.close();
@@ -416,7 +422,7 @@ public class Database{
                 Connection connection = DriverManager.getConnection(url);
                 Statement statement = connection.createStatement();
                 //INSERT VALUES
-                String sqlScript = String.format("spAddDepartment '%s', '%s', %d, %d", department.getName(),department.getLanguage(),Integer.parseInt(department.getDepartmentChair()),Integer.parseInt(department.getDepartmentFacultyID()));
+                String sqlScript = String.format("spAddDepartment '%s', '%s', %d, %d, %d", department.getName(),department.getLanguage(),Integer.parseInt(department.getDepartmentChair()),Integer.parseInt(department.getDepartmentFacultyID()),Integer.parseInt(department.getCourseCount()));
                 ResultSet resultSet = statement.executeQuery(sqlScript);
 
                 int id = 0;
@@ -438,7 +444,7 @@ public class Database{
 
                 Statement statement = connection.createStatement();
                 //INSERT VALUES
-                String sqlScript = String.format("spUpdateDepartment '%d', '%s', '%s', '%d', %d", department.getID(),department.getName(),department.getLanguage(),Integer.parseInt(department.getDepartmentChair()),Integer.parseInt(department.getDepartmentFacultyID()));
+                String sqlScript = String.format("spUpdateDepartment '%d', '%s', '%s', '%d', %d, %d", department.getID(),department.getName(),department.getLanguage(),Integer.parseInt(department.getDepartmentChair()),Integer.parseInt(department.getDepartmentFacultyID()),Integer.parseInt(department.getCourseCount()));
                 int result = statement.executeUpdate(sqlScript);
                 boolean updated = false;
                 if(result != 0) updated = true;
@@ -765,6 +771,475 @@ public class Database{
                 DatabaseError databaseError = new DatabaseError(e.getMessage());
             }
             return null;
+        }
+
+        public static Task CreateDatabaseFromScratch() {
+            return new Task(){
+                @Override
+                protected Object call() throws Exception {
+                    updateTitle("Checking if the database exists...");
+                    try{
+                        updateProgress(0,100);
+                        Connection connection = DriverManager.getConnection(urlWDatabase);
+                        Statement statement = connection.createStatement();
+                        String sqlScript = "CREATE DATABASE [StudentDatabase]";
+                        statement.executeUpdate(sqlScript);
+
+                        updateTitle("Creating the database from scratch...");
+                        updateProgress(5,100);
+                        Thread.sleep(250);
+
+                        connection = DriverManager.getConnection(url);
+
+
+                        statement = connection.createStatement();
+                        sqlScript = " CREATE TABLE [dbo].[DepartmentTable](\n" +
+                                "\t[ID] [int] IDENTITY(1000,1) NOT NULL,\n" +
+                                "\t[Name] [nvarchar](50) NULL,\n" +
+                                "\t[Language] [nvarchar](50) NULL,\n" +
+                                "\t[DepartmentChair] [int] NULL,\n" +
+                                "\t[FacultyID] [int] NULL,\n" +
+                                "\t[CourseCount] [int] NULL,\n" +
+                                " CONSTRAINT [PK_DepartmentTable] PRIMARY KEY CLUSTERED \n" +
+                                "(\n" +
+                                "\t[ID] ASC\n" +
+                                ")WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]\n" +
+                                ") ON [PRIMARY]";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(8,100);
+
+                        sqlScript = "CREATE TABLE [dbo].[FacultyTable](\n" +
+                                "\t[ID] [int] IDENTITY(100,1) NOT NULL,\n" +
+                                "\t[Name] [nvarchar](50) NULL,\n" +
+                                "\t[FacultyChair] [int] NULL,\n" +
+                                " CONSTRAINT [PK_FacultyTable] PRIMARY KEY CLUSTERED \n" +
+                                "(\n" +
+                                "\t[ID] ASC\n" +
+                                ")WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]\n" +
+                                ") ON [PRIMARY]";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(11,100);
+
+                        sqlScript = "CREATE TABLE [dbo].[LeftTeacherTable](\n" +
+                                "\t[ID] [int] IDENTITY(1,1) NOT NULL,\n" +
+                                "\t[info] [nvarchar](100) NOT NULL,\n" +
+                                " CONSTRAINT [PK_LeftTeacherTable] PRIMARY KEY CLUSTERED \n" +
+                                "(\n" +
+                                "\t[ID] ASC\n" +
+                                ")WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]\n" +
+                                ") ON [PRIMARY]\n";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(14,100);
+
+                        sqlScript = "CREATE TABLE [dbo].[StudentTable](\n" +
+                                "\t[ID] [int] IDENTITY(10000,2) NOT NULL,\n" +
+                                "\t[Name] [nvarchar](50) NOT NULL,\n" +
+                                "\t[Surname] [nvarchar](50) NOT NULL,\n" +
+                                "\t[Password] [nvarchar](50) NOT NULL,\n" +
+                                "\t[Email] [nvarchar](50) NOT NULL,\n" +
+                                "\t[DepartmentID] [int] NULL,\n" +
+                                "\t[RegisteredDate] [datetime] NULL,\n" +
+                                "\t[Semester] [int] NULL,\n" +
+                                "\t[AdvisorID] [int] NULL,\n" +
+                                "\t[GPA] [float] NULL,\n" +
+                                " CONSTRAINT [PK_StudentTable] PRIMARY KEY CLUSTERED \n" +
+                                "(\n" +
+                                "\t[ID] ASC\n" +
+                                ")WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]\n" +
+                                ") ON [PRIMARY]";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(17,100);
+
+                        sqlScript = "CREATE TABLE [dbo].[TeacherTable](\n" +
+                                "\t[ID] [int] IDENTITY(1000,1) NOT NULL,\n" +
+                                "\t[Name] [nvarchar](50) NULL,\n" +
+                                "\t[Surname] [nvarchar](50) NULL,\n" +
+                                "\t[Email] [nvarchar](50) NULL,\n" +
+                                "\t[Title] [nvarchar](50) NULL,\n" +
+                                "\t[Password] [nvarchar](50) NULL,\n" +
+                                "\t[DepartmentID] [int] NULL,\n" +
+                                "\t[RegisteredDate] [datetime] NULL,\n" +
+                                " CONSTRAINT [PK_Teacher] PRIMARY KEY CLUSTERED \n" +
+                                "(\n" +
+                                "\t[ID] ASC\n" +
+                                ")WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]\n" +
+                                ") ON [PRIMARY]";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(18,100);
+
+                        sqlScript = "CREATE UNIQUE NONCLUSTERED INDEX [NonClusteredIndex-20201215-182812] ON [dbo].[FacultyTable]\n" +
+                                "(\n" +
+                                "\t[Name] ASC\n" +
+                                ")WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]\n" +
+                                "SET ANSI_PADDING ON\n" +
+                                "CREATE NONCLUSTERED INDEX [NonClusteredIndex-20201215-182434] ON [dbo].[StudentTable]\n" +
+                                "(\n" +
+                                "\t[Name] ASC,\n" +
+                                "\t[Surname] ASC\n" +
+                                ")WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]\n" +
+                                "SET ANSI_PADDING ON\n" +
+                                "CREATE NONCLUSTERED INDEX [IX_TeacherTable_Name] ON [dbo].[TeacherTable]\n" +
+                                "(\n" +
+                                "\t[Name] ASC\n" +
+                                ")WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]\n";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(20,100);
+
+                        sqlScript = "ALTER TABLE [dbo].[StudentTable] ADD  CONSTRAINT [DF_StudentTable_Semester]  DEFAULT ((0)) FOR [Semester]\n" +
+
+                                "ALTER TABLE [dbo].[DepartmentTable]  WITH NOCHECK ADD  CONSTRAINT [FK_DepartmentTable_FacultyTable] FOREIGN KEY([FacultyID])\n" +
+                                "REFERENCES [dbo].[FacultyTable] ([ID])\n" +
+                                "ON DELETE CASCADE\n" +
+
+                                "ALTER TABLE [dbo].[DepartmentTable] CHECK CONSTRAINT [FK_DepartmentTable_FacultyTable]\n" +
+
+                                "ALTER TABLE [dbo].[DepartmentTable]  WITH NOCHECK ADD  CONSTRAINT [FK_DepartmentTable_Teacher] FOREIGN KEY([DepartmentChair])\n" +
+                                "REFERENCES [dbo].[TeacherTable] ([ID])\n" +
+                                "ON DELETE SET NULL\n" +
+
+                                "ALTER TABLE [dbo].[DepartmentTable] NOCHECK CONSTRAINT [FK_DepartmentTable_Teacher]\n" +
+
+                                "ALTER TABLE [dbo].[StudentTable]  WITH NOCHECK ADD  CONSTRAINT [FK_StudentTable_DepartmentTable] FOREIGN KEY([DepartmentID])\n" +
+                                "REFERENCES [dbo].[DepartmentTable] ([ID])\n" +
+                                "ON DELETE SET NULL\n" +
+
+                                "ALTER TABLE [dbo].[StudentTable] NOCHECK CONSTRAINT [FK_StudentTable_DepartmentTable]\n" +
+
+                                "ALTER TABLE [dbo].[StudentTable]  WITH CHECK ADD  CONSTRAINT [FK_StudentTable_Teacher] FOREIGN KEY([AdvisorID])\n" +
+                                "REFERENCES [dbo].[TeacherTable] ([ID])\n" +
+                                "ON DELETE SET NULL\n" +
+
+                                "ALTER TABLE [dbo].[StudentTable] CHECK CONSTRAINT [FK_StudentTable_Teacher]\n" +
+
+                                "ALTER TABLE [dbo].[TeacherTable]  WITH CHECK ADD  CONSTRAINT [FK_Teacher_DepartmentTable] FOREIGN KEY([DepartmentID])\n" +
+                                "REFERENCES [dbo].[DepartmentTable] ([ID])\n" +
+                                "ON DELETE SET NULL\n" +
+
+                                "ALTER TABLE [dbo].[TeacherTable] CHECK CONSTRAINT [FK_Teacher_DepartmentTable]\n" +
+
+                                "ALTER TABLE [dbo].[StudentTable]  WITH CHECK ADD  CONSTRAINT [CK_StudentTable_GPA] CHECK  (([GPA]>=(0) AND [GPA]<=(4)))\n" +
+
+                                "ALTER TABLE [dbo].[StudentTable] CHECK CONSTRAINT [CK_StudentTable_GPA]";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(30,100);
+
+                        sqlScript = "CREATE FUNCTION [dbo].[Semester](@registeredDate date)  \n" +
+                                "RETURNS INT  \n" +
+                                "AS  \n" +
+                                "BEGIN  \n" +
+                                " DECLARE @Semester INT  \n" +
+                                "\n" +
+                                "set @Semester = DATEDIFF(MONTH, @registeredDate, GETDATE())\n" +
+                                "set @Semester /= 6\n" +
+                                "\n" +
+                                "RETURN @Semester  \n" +
+                                "END";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(32,100);
+
+                        sqlScript = "CREATE VIEW [dbo].[vAllStudent]\n" +
+                                "AS\n" +
+                                "SELECT        ID, Name, Surname, Password, Email, DepartmentID, RegisteredDate, Semester, AdvisorID, COALESCE (GPA, 0) AS GPA, CONVERT(nvarchar, RegisteredDate, 105) AS RegisteredDateFormatted\n" +
+                                "FROM            dbo.StudentTable";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(34,100);
+
+                        sqlScript = "CREATE procedure [dbo].[spABS]\n" +
+                                "@number float,\n" +
+                                "@result float OUTPUT\n" +
+                                "as\n" +
+                                "Begin\n" +
+                                "set @result = ABS(@number)\n" +
+                                "End";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(36,100);
+
+                        sqlScript = "create Procedure [dbo].[spAddDepartment] \n" +
+                                "\n" +
+                                "@Name nvarchar(50),\n" +
+                                "@Language nvarchar(50),\n" +
+                                "@DepartmentChair int,\n" +
+                                "@FacultyID int,\n" +
+                                "@CourseCount int\n" +
+                                "as\n" +
+                                "Begin\n" +
+                                "insert into DepartmentTable(Name,Language,DepartmentChair,FacultyID,CourseCount) OUTPUT SCOPE_IDENTITY()\n" +
+                                "values(LTRIM(RTRIM(@Name)),LTRIM(RTRIM(@Language)),@DepartmentChair,@FacultyID,@CourseCount)\n" +
+                                "End";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(38,100);
+
+                        sqlScript = "CREATE Procedure [dbo].[spAddFaculty]\n" +
+                                "\n" +
+                                "@Name nvarchar(50),\n" +
+                                "@FacultyChair int\n" +
+                                "\n" +
+                                "as\n" +
+                                "Begin\n" +
+                                "insert into FacultyTable (Name,FacultyChair) OUTPUT INSERTED.ID\n" +
+                                "values(LTRIM(RTRIM(@Name)),@FacultyChair)\n" +
+                                "End";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(40,100);
+
+                        sqlScript = "CREATE Procedure [dbo].[spAddStudent]\n" +
+                                "\n" +
+                                "@Name nvarchar(50),\n" +
+                                "@Surname nvarchar(50),\n" +
+                                "@Password nvarchar(50),\n" +
+                                "@Email nvarchar(50),\n" +
+                                "@DepartmentID int,\n" +
+                                "@AdvisorID int\n" +
+                                "as\n" +
+                                "Begin\n" +
+                                "insert into StudentTable (Name,Surname,Password,Email,DepartmentID,AdvisorID)\n" +
+                                "values(LTRIM(RTRIM(@Name)),UPPER(LTRIM(RTRIM(@Surname))),LTRIM(RTRIM(@Password)),LTRIM(RTRIM(@Email)),@DepartmentID,@AdvisorID)\n" +
+                                "SELECT SCOPE_IDENTITY()\n" +
+                                "End";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(42,100);
+
+                        sqlScript = "CREATE Procedure [dbo].[spAddTeacher]\n" +
+                                "\n" +
+                                "@Name nvarchar(50),\n" +
+                                "@Surname nvarchar(50),\n" +
+                                "@Password nvarchar(50),\n" +
+                                "@Email nvarchar(50),\n" +
+                                "@Title nvarchar(50),\n" +
+                                "@DepartmentID int\n" +
+                                "as\n" +
+                                "Begin\n" +
+                                "insert into TeacherTable(Name,Surname,Password,Email,Title,DepartmentID,RegisteredDate) OUTPUT INSERTED.ID\n" +
+                                "values(LTRIM(RTRIM(@Name)),UPPER(LTRIM(RTRIM(@Surname))),LTRIM(RTRIM(@Password)),LTRIM(RTRIM(@Email)),LTRIM(RTRIM(@Title)),@DepartmentID,GETDATE())\n" +
+                                "End";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(44,100);
+
+                        sqlScript = "CREATE Procedure [dbo].[spAllStudent]\n" +
+                                "as\n" +
+                                "Begin\n" +
+                                "Select * from vAllStudent\n" +
+                                "End";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(45,100);
+
+                        sqlScript = "create procedure [dbo].[spGetStudentCountByDepartment]\n" +
+                                "@departmentID int,\n" +
+                                "@result int OUTPUT\n" +
+                                "as\n" +
+                                "Begin\n" +
+                                "Select @result = COUNT(ID) from StudentTable where DepartmentID = @departmentID\n" +
+                                "End";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(47,100);
+
+                        sqlScript = "create Procedure [dbo].[spUpdateDepartment]\n" +
+                                "@ID int,\n" +
+                                "@Name nvarchar(50),\n" +
+                                "@Language nvarchar(50),\n" +
+                                "@DepartmentChair nvarchar(50),\n" +
+                                "@FacultyID nvarchar(50),\n" +
+                                "@CourseCount int\n" +
+                                "as\n" +
+                                "Begin\n" +
+                                "Update DepartmentTable\n" +
+                                "SET Name = @Name, Language = @Language,DepartmentChair= @DepartmentChair,FacultyID = @FacultyID, CourseCount = @CourseCount\n" +
+                                "WHERE ID = @ID\n" +
+                                "End";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(49,100);
+
+                        sqlScript = "create Procedure [dbo].[spUpdateFaculty]\n" +
+                                "\n" +
+                                "@ID int,\n" +
+                                "@Name nvarchar(50),\n" +
+                                "@FacultyChair int\n" +
+                                "as\n" +
+                                "Begin\n" +
+                                "Update FacultyTable\n" +
+                                "SET Name = @Name, FacultyChair = ISNULL(@FacultyChair,0)\n" +
+                                "WHERE ID = @ID\n" +
+                                "End";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(51,100);
+
+                        sqlScript = "Create Procedure [dbo].[spUpdateStudent]\n" +
+                                "\n" +
+                                "@ID int,\n" +
+                                "@Name nvarchar(50),\n" +
+                                "@Surname nvarchar(50),\n" +
+                                "@Password nvarchar(50),\n" +
+                                "@Email nvarchar(50),\n" +
+                                "@DepartmentID int\n" +
+                                "as\n" +
+                                "Begin\n" +
+                                "Update StudentTable\n" +
+                                "SET Name = @Name, Surname = @Surname,Password= @Password,Email = @Email,DepartmentID= @DepartmentID\n" +
+                                "WHERE ID = @ID\n" +
+                                "End";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(53,100);
+
+                        sqlScript = "Create Procedure [dbo].[spUpdateTeacher]\n" +
+                                "\n" +
+                                "@ID int,\n" +
+                                "@Name nvarchar(50),\n" +
+                                "@Surname nvarchar(50),\n" +
+                                "@Password nvarchar(50),\n" +
+                                "@Email nvarchar(50),\n" +
+                                "@Title nvarchar(50),\n" +
+                                "@DepartmentID int\n" +
+                                "as\n" +
+                                "Begin\n" +
+                                "Update TeacherTable\n" +
+                                "SET Name = @Name, Surname = @Surname,Password= @Password,Email = @Email,Title = @Title, DepartmentID= @DepartmentID\n" +
+                                "WHERE ID = @ID\n" +
+                                "End";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(55,100);
+
+                        sqlScript = "Create TRIGGER [dbo].[dtTeacherTableLeftTeachers]\n" +
+                                "ON [dbo].[TeacherTable]\n" +
+                                "FOR DELETE\n" +
+                                "AS\n" +
+                                "BEGIN\n" +
+                                "Declare @ID int\n" +
+                                "Declare @Name nvarchar(50)\n" +
+                                "Select @ID = ID from deleted\n" +
+                                "Select @Name = Name + SPACE(1) + Surname from deleted\n" +
+                                "insert into LeftTeacherTable (info)\n" +
+                                "values('An existing teacher, ID  = ' + Cast(@Id as nvarchar(10)) + ', ' + @Name + ' is deleted at ' + Cast(Getdate() as nvarchar(20)))\n" +
+                                "END";
+                        statement.executeUpdate(sqlScript);
+
+
+                        updateProgress(65,100);
+
+                        sqlScript = "SET IDENTITY_INSERT [dbo].[FacultyTable] ON\n" +
+                                "INSERT [dbo].[FacultyTable] ([ID], [Name], [FacultyChair]) VALUES (100, N'Mühendislik ve Doğa Bilimleri Fakültesi', 1000)\n" +
+                                "INSERT [dbo].[FacultyTable] ([ID], [Name], [FacultyChair]) VALUES (101, N'Hukuk Fakültesi', 1001)\n" +
+                                "INSERT [dbo].[FacultyTable] ([ID], [Name], [FacultyChair]) VALUES (102, N'Eğitim Fakültesi', 1002)\n" +
+                                "INSERT [dbo].[FacultyTable] ([ID], [Name], [FacultyChair]) VALUES (103, N'İşletme ve Yönetim Bilimleri Fakültesi', 1003)\n" +
+                                "SET IDENTITY_INSERT [dbo].[FacultyTable] OFF";
+                        statement.executeUpdate(sqlScript);
+
+
+                        updateProgress(70,100);
+
+                        sqlScript = "SET IDENTITY_INSERT [dbo].[DepartmentTable] ON \n" +
+                                "INSERT [dbo].[DepartmentTable] ([ID], [Name], [Language], [DepartmentChair], [FacultyID], [CourseCount]) VALUES (1000, N'Bilgisayar Mühendisliği', N'Ingilizce', 1004, 100, 36)\n" +
+                                "INSERT [dbo].[DepartmentTable] ([ID], [Name], [Language], [DepartmentChair], [FacultyID], [CourseCount]) VALUES (1001, N'Gıda Mühendisliği', N'Turkce', 1005, 100, 40)\n" +
+                                "INSERT [dbo].[DepartmentTable] ([ID], [Name], [Language], [DepartmentChair], [FacultyID], [CourseCount]) VALUES (1002, N'Yazılım Mühendisliği', N'Ingilizce', 1004, 100, 32)\n" +
+                                "INSERT [dbo].[DepartmentTable] ([ID], [Name], [Language], [DepartmentChair], [FacultyID], [CourseCount]) VALUES (1003, N'Hukuk', N'Turkce', 1001, 101, 44)\n" +
+                                "INSERT [dbo].[DepartmentTable] ([ID], [Name], [Language], [DepartmentChair], [FacultyID], [CourseCount]) VALUES (1004, N'Matematik ve Fen Bilimleri Eğitim', N'Turkce', 1006, 102, 33)\n" +
+                                "INSERT [dbo].[DepartmentTable] ([ID], [Name], [Language], [DepartmentChair], [FacultyID], [CourseCount]) VALUES (1005, N'Temel Eğitim', N'Turkce', 1006, 102, 26)\n" +
+                                "INSERT [dbo].[DepartmentTable] ([ID], [Name], [Language], [DepartmentChair], [FacultyID], [CourseCount]) VALUES (1006, N'Türkçe ve Sosyal Bilimler Eğitimi', N'Turkce', 1007, 102, 28)\n" +
+                                "INSERT [dbo].[DepartmentTable] ([ID], [Name], [Language], [DepartmentChair], [FacultyID], [CourseCount]) VALUES (1007, N'İktisat', N'Ingilizce', 1008, 103, 30)\n" +
+                                "INSERT [dbo].[DepartmentTable] ([ID], [Name], [Language], [DepartmentChair], [FacultyID], [CourseCount]) VALUES (1008, N'İşletme', N'Ingilizce', 1008, 103, 22)\n" +
+                                "INSERT [dbo].[DepartmentTable] ([ID], [Name], [Language], [DepartmentChair], [FacultyID], [CourseCount]) VALUES (1009, N'Uluslararası Ticaret ve Finansman', N'Ingilizce', 1009, 103, 20)\n" +
+                                "SET IDENTITY_INSERT [dbo].[DepartmentTable] OFF";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(75,100);
+
+                        sqlScript = "SET IDENTITY_INSERT [dbo].[LeftTeacherTable] ON \n" +
+                                "INSERT [dbo].[LeftTeacherTable] ([ID], [info]) VALUES (1, N'An existing teacher, ID  = 1000, Yahya Sirin is deleted at Dec 23 2020 11:06AM')\n" +
+                                "INSERT [dbo].[LeftTeacherTable] ([ID], [info]) VALUES (2, N'An existing teacher, ID  = 1006, Temel Temel is deleted at Dec 24 2020  5:41PM')\n" +
+                                "SET IDENTITY_INSERT [dbo].[LeftTeacherTable] OFF";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(78,100);
+
+                        sqlScript = "SET IDENTITY_INSERT [dbo].[TeacherTable] ON \n" +
+                                "INSERT [dbo].[TeacherTable] ([ID], [Name], [Surname], [Email], [Title], [Password], [DepartmentID], [RegisteredDate]) VALUES (1000, N'Ali', N'HAMITOGLU', N'ali.hamitoglu@izu.edu.tr', N'Dr.', N'Kremal24', 1000, CAST(N'2010-12-13T15:46:19.610' AS DateTime))\n" +
+                                "INSERT [dbo].[TeacherTable] ([ID], [Name], [Surname], [Email], [Title], [Password], [DepartmentID], [RegisteredDate]) VALUES (1001, N'Resul', N'TANYILDIZI', N'resul.tanyildizi@izu.edu.tr', N'Prof.', N'Terelm67', 1003, CAST(N'2008-12-19T14:01:20.350' AS DateTime))\n" +
+                                "INSERT [dbo].[TeacherTable] ([ID], [Name], [Surname], [Email], [Title], [Password], [DepartmentID], [RegisteredDate]) VALUES (1002, N'Seda', N'UYGUN', N'seda.uygun@izu.edu.tr', N'Dr.', N'Muhtre64', 1004, CAST(N'2019-12-13T15:46:19.610' AS DateTime))\n" +
+                                "INSERT [dbo].[TeacherTable] ([ID], [Name], [Surname], [Email], [Title], [Password], [DepartmentID], [RegisteredDate]) VALUES (1003, N'Burak', N'CALISKAN', N'burak.caliskan@izu.edu.tr', N'Prof.', N'Kelom23', 1008, CAST(N'2019-12-19T14:01:20.350' AS DateTime))\n" +
+                                "INSERT [dbo].[TeacherTable] ([ID], [Name], [Surname], [Email], [Title], [Password], [DepartmentID], [RegisteredDate]) VALUES (1004, N'Derya', N'Akat', N'derya.akat@izu.edu.tr', N'Dr.', N'Efeom73', 1000, CAST(N'2018-12-19T14:01:20.350' AS DateTime))\n" +
+                                "INSERT [dbo].[TeacherTable] ([ID], [Name], [Surname], [Email], [Title], [Password], [DepartmentID], [RegisteredDate]) VALUES (1005, N'Sevgim', N'SUCUK', N'sevgim.sucuk@izu.edu.tr', N'Dr.', N'trease35', 1001, CAST(N'2006-12-13T15:46:19.610' AS DateTime))\n" +
+                                "INSERT [dbo].[TeacherTable] ([ID], [Name], [Surname], [Email], [Title], [Password], [DepartmentID], [RegisteredDate]) VALUES (1006, N'Ceylan', N'DOGAN', N'ceylan.dogan@izu.edu.tr', N'Prof.', N'erqwet99', 1004, CAST(N'2005-12-19T14:01:20.350' AS DateTime))\n" +
+                                "INSERT [dbo].[TeacherTable] ([ID], [Name], [Surname], [Email], [Title], [Password], [DepartmentID], [RegisteredDate]) VALUES (1007, N'Nilay', N'KORKUT', N'nilay.korkut@izu.edu.tr', N'Dr.', N'fererr12', 1006, CAST(N'2011-12-13T15:46:19.610' AS DateTime))\n" +
+                                "INSERT [dbo].[TeacherTable] ([ID], [Name], [Surname], [Email], [Title], [Password], [DepartmentID], [RegisteredDate]) VALUES (1008, N'Resa', N'SOLUK', N'resa.soluk@izu.edu.tr', N'Prof.', N'nutfer55', 1008, CAST(N'2018-12-19T14:01:20.350' AS DateTime))\n" +
+                                "INSERT [dbo].[TeacherTable] ([ID], [Name], [Surname], [Email], [Title], [Password], [DepartmentID], [RegisteredDate]) VALUES (1009, N'Selahattin', N'BUYUKTURKMEN', N'selahattin.buyukturkmen@izu.edu.tr', N'Prof.', N'dololo52', 1009, CAST(N'2012-12-19T14:01:20.350' AS DateTime))\n" +
+                                "SET IDENTITY_INSERT [dbo].[TeacherTable] OFF";
+                        statement.executeUpdate(sqlScript);
+
+                        updateProgress(90,100);
+
+                        sqlScript = "SET IDENTITY_INSERT [dbo].[StudentTable] ON \n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10000, N'Erdem', N'DEMIR', N'Tuyen14', N'demir.erdem@std.izu.edu.tr', 1000, CAST(N'2018-12-19T13:53:52.820' AS DateTime), 0, 1000, 2.5)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10002, N'Tayyib', N'BAYRAM', N'Tufen14', N'bayram.tayyib@std.izu.edu.tr', 1000, CAST(N'2018-12-19T13:54:14.807' AS DateTime), 0, 1000, 3)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10004, N'Isa', N'ERBAS', N'Tulen24', N'erbas.isa@std.izu.edu.tr', 1001, CAST(N'2017-12-19T13:54:36.023' AS DateTime), 0, 1001, 3.25)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10006, N'Nafiz', N'CANITEZ', N'Luten65', N'canitez.nafiz@std.izu.edu.tr', 1008, CAST(N'2020-12-19T13:56:20.687' AS DateTime), 0, 1000, 3)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10008, N'Abdullah', N'TURGUT', N'Maten89', N'turgut.abdullah@std.izu.edu.tr', 1001, CAST(N'2019-12-19T15:44:59.183' AS DateTime), 0, 1000, 3)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10010, N'Yusuf', N'USLU', N'Zaten89', N'uslu.yusuf@std.izu.edu.tr', 1001, CAST(N'2020-06-19T16:08:42.883' AS DateTime), 0, 1002, 1)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10012, N'Emre', N'KILIC', N'Manen41', N'kilic.emre@std.izu.edu.tr', 1002, CAST(N'2020-02-19T16:13:28.947' AS DateTime), 0, 1001, 1.75)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10014, N'Hasan', N'CILDIR', N'Huran19', N'cildir.hasan@std.izu.edu.tr', 1003, CAST(N'2020-01-22T20:21:54.997' AS DateTime), 0, 1004, 2)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10016, N'Selim', N'GÜLCE', N'Terak67', N'gülce.selim@std.izu.edu.tr', 1003, CAST(N'2018-12-22T20:26:54.047' AS DateTime), 4, 1004, 3.2)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10018, N'Sıla', N'KARASATI', N'Lilet55', N'karasati.sila@std.izu.edu.tr', 1004, CAST(N'2017-12-23T10:38:43.137' AS DateTime), 0, 1001, 3)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10020, N'Resul', N'ŞEKER', N'Fereb56', N'seker.resul@std.izu.edu.tr', 1007, CAST(N'2018-06-23T10:40:00.457' AS DateTime), 0, 1001, 4)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10022, N'Nurettin', N'TANGÜNEŞ', N'Ketan75', N'tangünes.nurettin@std.izu.edu.tr', 1009, CAST(N'2018-03-23T10:48:06.680' AS DateTime), 0, 1005, 4)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10024, N'Nazim', N'GÜRPINAR', N'Juter87', N'gurpinar.nazim@std.izu.edu.tr', 1006, CAST(N'2015-12-23T10:51:05.683' AS DateTime), 0, 1006, 3)\n" +
+                                "INSERT [dbo].[StudentTable] ([ID], [Name], [Surname], [Password], [Email], [DepartmentID], [RegisteredDate], [Semester], [AdvisorID], [GPA]) VALUES (10026, N'Basak', N'TURAÇ', N'Lopez22', N'turac.basak@std.izu.edu.tr', 1005, CAST(N'2010-12-23T10:54:12.687' AS DateTime), 0, 1006, 3)\n" +
+                                "SET IDENTITY_INSERT [dbo].[StudentTable] OFF";
+                        statement.executeUpdate(sqlScript);
+
+                        sqlScript = "Create TRIGGER [dbo].[dtStudentTableRegisteredDate]\n" +
+                                "ON [dbo].[StudentTable]\n" +
+                                "FOR INSERT\n" +
+                                "AS\n" +
+                                "BEGIN\n" +
+                                "Update StudentTable\n" +
+                                "Set RegisteredDate = GETDATE()\n" +
+                                "WHERE ID = (SELECT ID from inserted)\n" +
+                                "END";
+                        statement.executeUpdate(sqlScript);
+
+
+                        updateProgress(100,100);
+                        updateTitle("Database created successfully...");
+                        Thread.sleep(500);
+
+                    }catch (SQLException sqlException){
+                        if (sqlException.getErrorCode() == 1801) {
+                            updateTitle("Database already exists...");
+
+                        }
+                        else {
+                            updateTitle("Error: "+sqlException.getMessage());
+
+                        }
+                    }
+                    catch(Exception e){
+                        updateTitle("Error: "+e.getMessage());
+                    }
+
+
+                    return null;
+                }
+            };
+
+
         }
 
 

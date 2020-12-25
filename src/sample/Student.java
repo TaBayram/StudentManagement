@@ -17,7 +17,7 @@ public class Student {
     String RegisteredDateFormatted;
     Integer Semester;
     Integer AdvisorID;
-    Integer GPA;
+    float GPA;
     String enter = "Giriniz";
 
     public Student() {
@@ -122,11 +122,11 @@ public class Student {
         RegisteredDateFormatted = registeredDateFormatted;
     }
 
-    public Integer getGPA() {
+    public float getGPA() {
         return GPA;
     }
 
-    public void setGPA(Integer GPA) {
+    public void setGPA(float GPA) {
         this.GPA = GPA;
     }
 

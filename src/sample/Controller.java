@@ -6,6 +6,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -13,6 +14,10 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.util.converter.DateTimeStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -100,6 +105,7 @@ public class Controller {
     public Label Label_EnterPassword;
     public TableColumn TableColumn_StudentGPA;
     public ListView ListView_LeftTeacherTable;
+    public TableColumn TableColumn_DepartmentCourseCount;
 
 
     public void initialize(){
@@ -367,11 +373,8 @@ public class Controller {
         TableColumn_StudentEmail.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_StudentPassword.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_StudentDepartment.setCellFactory(TextFieldTableCell.<String>forTableColumn());
-        //TableColumn_StudentRegisteredDate.setCellFactory(TextFieldTableCell.forTableColumn(new DateTimeStringConverter()));
-        //TableColumn_StudentSemester.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         TableColumn_StudentAdvisorID.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
-        //TableColumn_StudentDepartment.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
         TableColumn_StudentID.setCellValueFactory(new PropertyValueFactory<Student, Integer>("ID"));
         TableColumn_StudentName.setCellValueFactory(new PropertyValueFactory<Student, String>("Name"));
@@ -382,7 +385,7 @@ public class Controller {
         TableColumn_StudentRegisteredDate.setCellValueFactory(new PropertyValueFactory<Student, String>("RegisteredDateFormatted"));
         TableColumn_StudentSemester.setCellValueFactory(new PropertyValueFactory<Student, Integer>("Semester"));
         TableColumn_StudentAdvisorID.setCellValueFactory(new PropertyValueFactory<Student, Integer>("AdvisorID"));
-        TableColumn_StudentGPA.setCellValueFactory(new PropertyValueFactory<Student, Integer>("GPA"));
+        TableColumn_StudentGPA.setCellValueFactory(new PropertyValueFactory<Student, Float>("GPA"));
 
         TableView_Student.setEditable(true);
         TableView_Student.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -432,6 +435,10 @@ public class Controller {
         if(columnID.endsWith("DepartmentFacultyID")){
             department.setDepartmentFacultyID((String) event.getNewValue());
         }
+        if(columnID.endsWith("CourseCount")){
+            if(HasOnlyNumbers("Course Count",(String)event.getNewValue()))
+                department.setCourseCount((String) event.getNewValue());
+        }
 
         //CHECK IF CELLS ARE IN CORRECT FORMAT
         if(department.getName() != "Giriniz" && department.getLanguage() != "Giriniz" && department.getDepartmentChair() != "Giriniz" && department.getDepartmentFacultyID()!="Giriniz"){
@@ -439,7 +446,7 @@ public class Controller {
 
             if (HasSpecialCharacters("Name",department.getName())) return;
             if (HasSpecialCharacters("Language",department.getLanguage())) return;
-            if (Database.DatabaseConnection.DoesFacultyExist(Integer.parseInt(department.getDepartmentFacultyID()))){
+            if (!Database.DatabaseConnection.DoesFacultyExist(Integer.parseInt(department.getDepartmentFacultyID()))){
                 ErrorAlert errorAlert = new ErrorAlert("Faculty does not exist");
                 return;
             }
@@ -484,6 +491,7 @@ public class Controller {
         TableColumn_DepartmentLanguage.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_DepartmentChair.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         TableColumn_DepartmentFacultyID.setCellFactory(TextFieldTableCell.<String>forTableColumn());
+        TableColumn_DepartmentCourseCount.setCellFactory(TextFieldTableCell.<String>forTableColumn());
 
 
 
@@ -493,6 +501,7 @@ public class Controller {
         TableColumn_DepartmentChair.setCellValueFactory(new PropertyValueFactory<Department, String>("DepartmentChair"));
         TableColumn_DepartmentFacultyID.setCellValueFactory(new PropertyValueFactory<Department, String>("DepartmentFacultyID"));
         TableColumn_DepartmentStudent.setCellValueFactory(new PropertyValueFactory<Department, Button>("Button"));
+        TableColumn_DepartmentCourseCount.setCellValueFactory(new PropertyValueFactory<Department, String>("CourseCount"));
 
         TableView_Department.setEditable(true);
         TableView_Department.setItems(departments);
@@ -825,11 +834,12 @@ public class Controller {
 
     }
 
-    public void KeyPressPassword(KeyEvent keyEvent) {
+    public void KeyPressPassword(KeyEvent keyEvent) throws SQLException {
         if(keyEvent.getCode().equals(KeyCode.ENTER)){
             String input = TextField_LogIn.getText();
             if(input.equals("1234")){
                 StackPane_Main.getChildren().remove(AnchorPane_LogIn);
+                TaskCreateDatabase();
             }
             else{
                 Label_EnterPassword.setText("TRY AGAIN");
@@ -864,7 +874,7 @@ public class Controller {
     }
 
     private boolean HasSpecialCharacters(String name, String text){
-        Pattern pattern = Pattern.compile("[^a-zşöÖğĞüÜıİçÇ]", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("[^a-zşöÖğĞüÜıİçÇ ]", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(text);
         boolean hasSpecial = matcher.find();
         if(hasSpecial){
@@ -1088,6 +1098,55 @@ public class Controller {
                 return results;
             }
         };
+    }
+
+    public void TaskCreateDatabase() {
+        Task task = Database.DatabaseConnection.CreateDatabaseFromScratch();
+        Thread thread = new Thread(task);
+        Region veil = new Region();
+        veil.setStyle("-fx-background-color: rgba(50,50,50,0.75)");
+
+        ProgressBar progressBar = new ProgressBar();
+        progressBar.progressProperty().unbind();
+        progressBar.setMaxSize(400,100);
+        progressBar.progressProperty().bind(task.progressProperty());
+        progressBar.visibleProperty().bind(task.runningProperty());
+
+        Label label = new Label();
+        label.textProperty().bind(task.titleProperty());
+        label.visibleProperty().bind(task.runningProperty());
+        label.setFont(new Font(25));
+        label.setPrefSize(600,100);
+        label.setTextAlignment(TextAlignment.CENTER);
+        label.setAlignment(Pos.CENTER);
+        label.setTranslateY(-75);
+        label.setTextFill(Color.web("#DDDDFF"));
+
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        progressIndicator.setMaxSize(500,500);
+
+        veil.visibleProperty().bind(task.runningProperty());
+        progressIndicator.visibleProperty().bind(task.runningProperty());
+
+        StackPane_Main.getChildren().addAll(veil,progressIndicator,progressBar,label);
+
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.contentTextProperty().bind(task.titleProperty());
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+
+        thread.setDaemon(true);
+        thread.start();
+
+        task.setOnSucceeded(e->{
+            if(task.titleProperty().toString().contains("Error")){
+                alert.show();
+            }
+            else
+                alert.close();
+        });
+
     }
 
 

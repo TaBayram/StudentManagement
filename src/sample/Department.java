@@ -10,17 +10,25 @@ public class Department {
     String DepartmentChair;
     Button button;
     String DepartmentFacultyID;
-
+    String courseCount;
     String enter = "Giriniz";
+
     public Department() {
         this.ID = ID;
         Name = enter;
         this.language = enter;
         DepartmentChair = enter;
-        this.button = button;
         DepartmentFacultyID = enter;
+        courseCount = enter;
     }
 
+    public String getCourseCount() {
+        return courseCount;
+    }
+
+    public void setCourseCount(String courseCount) {
+        this.courseCount = courseCount;
+    }
 
     public int getID() {
         return ID;
