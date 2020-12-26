@@ -24,6 +24,7 @@ public class Teacher {
         Title = enter;
         Password = enter;
         DepartmentID = enter;
+        HiddenPassword = "****";
     }
 
 

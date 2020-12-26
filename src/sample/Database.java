@@ -973,7 +973,7 @@ public class Database{
                                 "@CourseCount int\n" +
                                 "as\n" +
                                 "Begin\n" +
-                                "insert into DepartmentTable(Name,Language,DepartmentChair,FacultyID,CourseCount) OUTPUT SCOPE_IDENTITY()\n" +
+                                "insert into DepartmentTable(Name,Language,DepartmentChair,FacultyID,CourseCount) OUTPUT INSERTED.ID\n" +
                                 "values(LTRIM(RTRIM(@Name)),LTRIM(RTRIM(@Language)),@DepartmentChair,@FacultyID,@CourseCount)\n" +
                                 "End";
                         statement.executeUpdate(sqlScript);

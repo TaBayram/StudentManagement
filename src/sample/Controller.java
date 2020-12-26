@@ -23,6 +23,7 @@ import javafx.util.converter.IntegerStringConverter;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -160,11 +161,31 @@ public class Controller {
 
 
         //CHECK IF CELLS ARE IN CORRECT FORMAT
-        if(faculty.getName() != "Giriniz" && faculty.getFacultyChair() != "Giriniz"){
+        if(faculty.getName() != "Giriniz" &&  faculty.getFacultyChair() != "Giriniz"){
+
 
 
             if (HasSpecialCharacters("Name",faculty.getName())) return;
             if (!HasOnlyNumbers("Faculty Chair",faculty.getFacultyChair())) return;
+            if(!faculty.getFacultyChair().equals("0")){
+                if(!Database.DatabaseConnection.DoesTeacherExist(Integer.parseInt(faculty.getFacultyChair()))){
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setHeaderText(null);
+                    alert.setContentText("Teacher does not exist. \nPress OK if you want to add the teacher later.");
+                    alert.setResizable(false);
+                    alert.setTitle("Error");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    ButtonType button = result.orElse(ButtonType.CANCEL);
+
+                    if (button == ButtonType.OK) {
+                        faculty.setFacultyChair("0");
+                        TableView_Faculty.refresh();
+                    } else {
+                        return;
+                    }
+
+                }
+            }
 
             if(faculty.getID() == 0) {
                 int id = Database.DatabaseConnection.AddFaculty(faculty);
@@ -446,9 +467,30 @@ public class Controller {
 
             if (HasSpecialCharacters("Name",department.getName())) return;
             if (HasSpecialCharacters("Language",department.getLanguage())) return;
+            if(!HasOnlyNumbers("Faculty ID",department.getDepartmentFacultyID())) return;
             if (!Database.DatabaseConnection.DoesFacultyExist(Integer.parseInt(department.getDepartmentFacultyID()))){
                 ErrorAlert errorAlert = new ErrorAlert("Faculty does not exist");
                 return;
+            }
+            if(!HasOnlyNumbers("Department Chair",department.getDepartmentChair())) return;
+            if(!department.getDepartmentChair().equals("0")){
+                if(!Database.DatabaseConnection.DoesTeacherExist(Integer.parseInt(department.getDepartmentChair()))){
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setHeaderText(null);
+                    alert.setContentText("Teacher does not exist. \nPress OK if you want to add the teacher later.");
+                    alert.setResizable(false);
+                    alert.setTitle("Error");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    ButtonType button = result.orElse(ButtonType.CANCEL);
+
+                    if (button == ButtonType.OK) {
+                        department.setDepartmentChair("0");
+                        TableView_Department.refresh();
+                    } else {
+                        return;
+                    }
+
+                }
             }
 
             if(department.getID() == 0) {
@@ -834,21 +876,6 @@ public class Controller {
 
     }
 
-    public void KeyPressPassword(KeyEvent keyEvent) throws SQLException {
-        if(keyEvent.getCode().equals(KeyCode.ENTER)){
-            String input = TextField_LogIn.getText();
-            if(input.equals("1234")){
-                StackPane_Main.getChildren().remove(AnchorPane_LogIn);
-                TaskCreateDatabase();
-            }
-            else{
-                Label_EnterPassword.setText("TRY AGAIN");
-            }
-
-        }
-
-    }
-
     public void ShowLeftTeachers(ActionEvent actionEvent) {
         MainPaneHideOthersExceptThis(ListView_LeftTeacherTable);
         var list = Database.DatabaseConnection.GetLeftTeachers();
@@ -1098,6 +1125,21 @@ public class Controller {
                 return results;
             }
         };
+    }
+
+    public void KeyPressPassword(KeyEvent keyEvent) {
+        if(keyEvent.getCode().equals(KeyCode.ENTER)){
+            String input = TextField_LogIn.getText();
+            if(input.equals("1234")){
+                StackPane_Main.getChildren().remove(AnchorPane_LogIn);
+                TaskCreateDatabase();
+            }
+            else{
+                Label_EnterPassword.setText("TRY AGAIN");
+            }
+
+        }
+
     }
 
     public void TaskCreateDatabase() {
